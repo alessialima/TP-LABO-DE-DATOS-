@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Editor de Spyder
-
-Este es un archivo temporal.
-"""
 import pandas as pd
 import duckdb as dd
 import openpyxl as op
@@ -32,36 +26,31 @@ dataframeDepartamento = dd.sql(consultaDepto).df()
 print(dataframeDepartamento)
 #%%
 consultaEdadCasos = """
-                    WITH numeracion AS (
-                    SELECT *,
-                    ROW_NUMBER() OVER () AS row_num
+                    WITH numeracion AS (SELECT *,  
+                    ROW_NUMBER() OVER () AS ordenar
                     FROM poblacion),
-                    departamentos AS (
-                    SELECT 
+                    departamentos AS (SELECT 
                     TRIM(REPLACE("Unnamed: 1", 'AREA #', '')) AS id_departamento,
-                    "Unnamed: 2" AS departamento,
-                    row_num
+                    "Unnamed: 2" AS departamento, ordenar
                     FROM numeracion
                     WHERE "Unnamed: 1" LIKE 'AREA #%'),
-                    datos AS (
-                    SELECT 
-                    n.row_num,
-                    TRIM(n."Unnamed: 1") AS edad_str,
-                    TRIM(n."Unnamed: 2") AS casos_str
-                    FROM numeracion n)
+                    datos AS (SELECT ordenar,
+                    TRIM("Unnamed: 1") AS edad_str,  
+                    TRIM("Unnamed: 2") AS casos_str
+                    FROM numeracion)
                     SELECT 
                     d.id_departamento,
                     d.departamento,
                     CAST(dt.edad_str AS INTEGER) AS edad,
-                    CAST(dt.casos_str AS INTEGER) AS casos
+                    CAST(dt.casos_str AS INTEGER) AS cantidad
                     FROM departamentos d
                     JOIN datos dt 
-                    ON dt.row_num > d.row_num 
-                    AND dt.row_num < COALESCE(
-                    (SELECT MIN(row_num) 
+                    ON dt.ordenar > d.ordenar 
+                    AND dt.ordenar < COALESCE(
+                    (SELECT MIN(ordenar) 
                     FROM departamentos 
-                    WHERE row_num > d.row_num),
-                    d.row_num + 250)  
+                    WHERE ordenar > d.ordenar),
+                    d.ordenar + 200)
                     WHERE 
                     dt.edad_str ~ '^\\d+$' 
                     AND dt.casos_str ~ '^\\d+$'
@@ -72,10 +61,10 @@ edad_casos_deptos = dd.sql(consultaEdadCasos).df()
 print(edad_casos_deptos)
 #%%
 consultaProvincia = """
-                SELECT DISTINCT
-                id_provincia, provincia
-                FROM bp
-                ORDER BY provincia;
+                    SELECT DISTINCT
+                    id_provincia, provincia
+                    FROM bp
+                    ORDER BY provincia;
 """
 
 dataframeProvincia = dd.sql(consultaProvincia).df()
@@ -83,42 +72,36 @@ print(dataframeProvincia)
 
 #%%        
 consultaSQL = """
-                SELECT DISTINCT 'Nivel inicial - Jardín de infantes' AS Nivel FROM ee
-                UNION ALL
-                SELECT DISTINCT 'Primario' FROM ee
-                UNION ALL 
-                SELECT DISTINCT 'Secundario' FROM ee
+              SELECT DISTINCT 'Nivel inicial - Jardín de infantes' AS Nivel FROM ee
+              UNION ALL
+              SELECT DISTINCT 'Primario' FROM ee
+              UNION ALL 
+              SELECT DISTINCT 'Secundario' FROM ee;
 """
 
 dataframeNivel = dd.sql(consultaSQL).df()
 print(dataframeNivel)
 #%%
 consultaSQL = """
-                SELECT DISTINCT id_departamento, nombre, mail, fecha_fundacion, nro_conabip
-                FROM bp
-                ORDER BY id_departamento;
+              SELECT DISTINCT id_departamento, nombre, mail, fecha_fundacion, nro_conabip
+              FROM bp
+              ORDER BY id_departamento;
 """
 
 dataframebp = dd.sql(consultaSQL).df()
 print(dataframebp)
 #%%
+
 consultaSQL = """
-                
+              SELECT DISTINCT 
+              Cueanexo, Nombre, Mail
+              FROM ee;
 
               """
 
-dataframeResultado = dd.sql(consultaSQL).df()
-
-
-
-
-
-
-
-
-
-
-
+dataframeee = dd.sql(consultaSQL).df()
+print(dataframeee)
+#%%
 
 
 
