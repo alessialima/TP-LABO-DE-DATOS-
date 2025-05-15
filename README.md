@@ -7,14 +7,14 @@ y la cantidad de bibliotecas nacionales?
 # Qué es cada file acá:
 
 Procesamiento de Datos:
--DER-TP.drawio.png
--DER_TP.png 
+*DER-TP.drawio.png
+*DER_TP.png 
 
 Informe (parte escrita): 
--Informe(pedacitos de).md 
+*Informe(pedacitos de).md 
 
 Código:
--tp1.py
--tplabo1.py
+*tp1.py
+*tplabo1.py
 
        
