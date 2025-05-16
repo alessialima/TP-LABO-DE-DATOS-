@@ -1,6 +1,7 @@
 
 import pandas as pd 
 import matplotlib.pyplot as plt
+import seaborn as sns 
 
 #%% Ejercicio 1 
 
@@ -30,3 +31,7 @@ ax.set_yticks([]) # saca los numeritos del eje y
 ax.spines[['right','top','left']].set_visible(False) # saca rayitas que quedan feas
 ax.bar_label(ax.containers[0], fontsize=8) # pone los numeritos arriba de las columnas
 #%% 
+
+"""
+LOS OTROS DOS HAY QUE PENSARLOS PRIMERO COMO SORONGO ORGANIZAR LA INFO EN PAPEL PQ IS A LOT !!!!!! 
+"""
