@@ -16,5 +16,6 @@ Informe (parte escrita):
 Código:
 *tp1.py
 *tplabo1.py
+*graficos codigo 
 
        
