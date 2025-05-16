@@ -1,18 +1,36 @@
-i) Cantidad de BP por Provincia
-a partir del dataframe 3 tal vez, tomar los atributos Cant_BP y Provincia !!
-siendo x = Provincias y = Cant_BP podemos usar el grafico como en el ej de las gaseosas no se como se llama
-si ordenamos la columna cant_bp de manera decreciente podría afectar al orden en el grafico 
-que es lo que queremos omg
+#%% Ejercicio 2 
 
+# podriamos hacer el mismo grafico en barras pero separando cada nivel por color
+# colores primarios(? pero verde en lugar de amarillo pq no se ve
 
-ii) Cantidad de EE de los departamentos en función de la población separando nivel 
-educativo y su correspondiente grupo etario (ident por color) 
+#%% Ejercicio 3
 
+"""
+iii) Realizar un boxplot por cada provincia, de la cantidad de EE por cada
+departamento de la provincia. Mostrar todos los boxplots en una misma
+figura, ordenados por la mediana de cada provincia.
+"""
 
-iii) Realizar un boxplot por CADA provincia de: la cant de ee por c/departamento de esa prov 
-luego, mostrarlos todos en una misma figura ordenados por la mediana de c/prov
+# empiezo pensando como seria 1 solo boxplot para 1 sola provincia 
 
-este es un montón de laburo hay que hacer de todo que triste empiezo por acá 
+chau = pd.DataFrame({'Provincia': ['Buenos Aires', 'CABA', 'Catamarca', 'Chaco', 'Buenos Aires', 'Buenos Aires', 'Catamarca'], 'Departamentos': ['D1', 'D1', 'D1', 'D2', 'D2', 'D3', 'D2'], 'Cant_EE': [10, 23, 2, 23, 33, 11, 4]})
 
-iv) Relación entre la cantdad de BP cada mil habitantes y de EE cada mil habitantes por departamento 
+fig, ax = plt.subplots()
+
+ax = sns.boxplot(x="Provincia", y="Cant_EE", hue="Departamentos", data=chau, color="#CCCC00")
+
+ax.set_title('')
+
+ax.set_xlabel('PROVINCIA')
+ax.set_ylabel('CANT_EE')
+ax.set_ylim(0,12) # lo mismo que puse en el del ej 1 aca ahre
+ax.legend(title='DEPARTAMENTOS')
+#%% Ejercicio 4 
+"""
+iv) Relación entre la cantidad de BP cada mil habitantes y de EE cada mil
+habitantes por departamento.
+Importante: En el informe, todos los reportes y gráficos deben ser acompañados por texto
+explicativo de lo observado en ellos y con las reflexiones que puedan desarrollar.
+
+"""
 
