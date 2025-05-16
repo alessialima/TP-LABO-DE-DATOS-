@@ -32,6 +32,4 @@ ax.spines[['right','top','left']].set_visible(False) # saca rayitas que quedan f
 ax.bar_label(ax.containers[0], fontsize=8) # pone los numeritos arriba de las columnas
 #%% 
 
-"""
-LOS OTROS DOS HAY QUE PENSARLOS PRIMERO COMO SORONGO ORGANIZAR LA INFO EN PAPEL PQ IS A LOT !!!!!! 
-"""
+
