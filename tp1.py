@@ -92,6 +92,54 @@ ConsignaUno = dd.sql(consultaSQL).df()
 print(ConsignaUno)
 
 #%%
+#agrupo las bibliotecas con su respectivo departamento y provincia
+consultaSQL = """
+              SELECT DISTINCT d.provincia, d.nombre_depto,
+              b.nro_conabip, b.fecha_fundacion, b.id_depto
+              FROM BP as b
+              INNER JOIN DEPARTAMENTO AS d
+              ON d.id_depto = b.id_depto;
+              """
+
+BPporDepto = dd.sql(consultaSQL).df()
+print(BPporDepto)
+#%%
+consultaSQL = """
+              SELECT id_depto, provincia AS Provincia, nombre_depto AS Departamento,
+              SUM(CASE WHEN fecha_fundacion >= 1950 THEN 1 ELSE 0 END) AS "Cantidad de BP fundadas desde 1950",
+              FROM BPporDepto
+              GROUP BY Provincia, Departamento, id_depto
+              ORDER BY Provincia, "Cantidad de BP fundadas desde 1950" DESC;
+              """
+
+ConsignaDosAux = dd.sql(consultaSQL).df()
+print(ConsignaDosAux)
+#%%
+#generamos los departamentos que no tenian ninguna biblioteca y les agregamos valor 0
+#para que figuren en la tabla 
+consultaSQL = """
+              SELECT d.id_depto, d.provincia AS Provincia, d.nombre_depto AS Departamento,
+              '0' AS "Cantidad de BP fundadas desde 1950"
+              FROM DEPARTAMENTO AS d
+              LEFT JOIN BPporDepto AS b
+              ON d.id_depto = b.id_depto
+              WHERE b.id_depto IS NULL AND NOT Departamento = 'Tolhuin'; 
+"""
+
+ConsignaDosAux2 = dd.sql(consultaSQL).df()
+print(ConsignaDosAux2)
+#%%
+consultaSQL = """
+              SELECT Provincia, Departamento,"Cantidad de BP fundadas desde 1950"
+              FROM ConsignaDosAux
+              UNION ALL
+              SELECT Provincia, Departamento,"Cantidad de BP fundadas desde 1950"
+              FROM ConsignaDosAux2;
+                    
+"""
+
+ConsignaDos = dd.sql(consultaSQL).df()
+print(ConsignaDos)
 
 
 
