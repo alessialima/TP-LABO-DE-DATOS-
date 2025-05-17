@@ -35,7 +35,7 @@ ax.set_yticks([]) # saca los numeritos del eje y
 fig, ax = plt.subplots()
 
 width = 400  # elegir un numero que funque
-bins = np.arange(1, (Consulta1["Población Jardin"]).max()+width, width) # 114 cambiarlo por total de poblacion 
+bins = np.arange((Consulta1["Población Jardin"]).min(), (Consulta1["Población Jardin"]).max()+width, width) # auxilio
 # me arma un rango para los bins 
 
 # cuenta que datos se meten en cada bin
@@ -68,5 +68,4 @@ ax.tick_params(axis="x", length=6,width=2)
 
 plt.tight_layout()
 plt.show()
-
           
