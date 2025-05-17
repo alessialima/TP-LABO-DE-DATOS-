@@ -2,108 +2,96 @@ import pandas as pd
 import duckdb as dd
 import openpyxl as op
 #%%
-carpeta = "/Users/margi/OneDrive/Escritorio/TPlabo1/"
-ee = pd.read_excel(carpeta+"2022_padron_oficial_establecimientos_educativos.xlsX",skiprows=6)
-poblacion = pd.read_excel(carpeta+"padron_poblacion.xlsX", skiprows=10)
-poblacion = poblacion.dropna(how='all')
-bp = pd.read_csv(carpeta+"bibliotecas-populares.csv")
+#elimino el index de mas que se exporto innecesariamente al crear las tablas
+carpeta = "/Users/margi/OneDrive/Escritorio/tp1/TablasModelo/"
+BP = pd.read_csv(carpeta+"BP.csv", index_col=[0])
+DEPARTAMENTO = pd.read_csv(carpeta+"DEPARTAMENTO.csv", index_col=[0])
+EE = pd.read_csv(carpeta+"EE.csv", index_col=[0])
+MAILS = pd.read_csv(carpeta+"MAILS.csv", index_col=[0])
+NIVELES = pd.read_csv(carpeta+"NIVELES.csv", index_col=[0])
+NIVELES_EN_EE = pd.read_csv(carpeta+"NIVELES_EN_EE.csv", index_col=[0])
 #%%
-###departamento
-consultaDepto = """
-                SELECT DISTINCT 
-                CASE 
-                WHEN TRIM(REPLACE("Unnamed: 1", 'AREA #', '')) LIKE '0%'
-                THEN SUBSTR(TRIM(REPLACE("Unnamed: 1", 'AREA #', '')), 2) 
-                ELSE TRIM(REPLACE("Unnamed: 1", 'AREA #', '')) 
-                END AS id_departamento,
-                "Unnamed: 2" AS departamento
-                FROM poblacion
-                WHERE "Unnamed: 1" LIKE 'AREA #%'
-                ORDER BY departamento;
-"""
-
-dataframeDepartamento = dd.sql(consultaDepto).df()
-print(dataframeDepartamento)
-#%%
-consultaEdadCasos = """
-                    WITH numeracion AS (SELECT *,  
-                    ROW_NUMBER() OVER () AS ordenar
-                    FROM poblacion),
-                    departamentos AS (SELECT 
-                    TRIM(REPLACE("Unnamed: 1", 'AREA #', '')) AS id_departamento,
-                    "Unnamed: 2" AS departamento, ordenar
-                    FROM numeracion
-                    WHERE "Unnamed: 1" LIKE 'AREA #%'),
-                    datos AS (SELECT ordenar,
-                    TRIM("Unnamed: 1") AS edad_str,  
-                    TRIM("Unnamed: 2") AS casos_str
-                    FROM numeracion)
-                    SELECT 
-                    d.id_departamento,
-                    d.departamento,
-                    CAST(dt.edad_str AS INTEGER) AS edad,
-                    CAST(dt.casos_str AS INTEGER) AS cantidad
-                    FROM departamentos d
-                    JOIN datos dt 
-                    ON dt.ordenar > d.ordenar 
-                    AND dt.ordenar < COALESCE(
-                    (SELECT MIN(ordenar) 
-                    FROM departamentos 
-                    WHERE ordenar > d.ordenar),
-                    d.ordenar + 200)
-                    WHERE 
-                    dt.edad_str ~ '^\\d+$' 
-                    AND dt.casos_str ~ '^\\d+$'
-                    ORDER BY d.id_departamento, edad;
-"""
-
-edad_casos_deptos = dd.sql(consultaEdadCasos).df()
-print(edad_casos_deptos)
-#%%
-consultaProvincia = """
-                    SELECT DISTINCT
-                    id_provincia, provincia
-                    FROM bp
-                    ORDER BY provincia;
-"""
-
-dataframeProvincia = dd.sql(consultaProvincia).df()
-print(dataframeProvincia)
-
-#%%        
+#en 2017 se creo el departamento de Tolhuin pero los establecimientos educativos no fueron actualizados
+#tomamos la decision de mantenerlo como parte de Rio Grande, por lo que para amendar agruparemos la poblacion de ambos deptos
 consultaSQL = """
-              SELECT DISTINCT 'Nivel inicial - Jardín de infantes' AS Nivel FROM ee
-              UNION ALL
-              SELECT DISTINCT 'Primario' FROM ee
-              UNION ALL 
-              SELECT DISTINCT 'Secundario' FROM ee;
+              SELECT id_depto, provincia, nombre_depto, 
+              pob_jardin, pob_primaria, pob_secundaria, pob_total
+              FROM DEPARTAMENTO WHERE nombre_depto NOT IN ('Tolhuin', 'Río Grande')
+              UNION ALL   
+              SELECT 
+              (SELECT id_depto FROM DEPARTAMENTO WHERE nombre_depto = 'Río Grande') AS id_depto,
+              provincia, 'Río Grande' AS nombre_depto,
+              SUM(pob_jardin) AS pob_jardin,
+              SUM(pob_primaria) AS pob_primaria,
+              SUM(pob_secundaria) AS pob_secundaria,
+              SUM(pob_total) AS pob_total
+              FROM DEPARTAMENTO
+              WHERE nombre_depto IN ('Río Grande', 'Tolhuin')
+              GROUP BY provincia;
 """
 
-dataframeNivel = dd.sql(consultaSQL).df()
-print(dataframeNivel)
+CorreccionTolhuin = dd.sql(consultaSQL).df()
+print(CorreccionTolhuin)
 #%%
+#primero agrupo las escuelas por departamento
 consultaSQL = """
-              SELECT DISTINCT id_departamento, nombre, mail, fecha_fundacion, nro_conabip
-              FROM bp
-              ORDER BY id_departamento;
-"""
-
-dataframebp = dd.sql(consultaSQL).df()
-print(dataframebp)
-#%%
-
-consultaSQL = """
-              SELECT DISTINCT 
-              Cueanexo, Nombre, Mail
-              FROM ee;
-
+              SELECT DISTINCT id_depto,
+              COUNT(Cueanexo) AS Cant_EE,
+              FROM EE
+              GROUP BY id_depto;
               """
 
-dataframeee = dd.sql(consultaSQL).df()
-print(dataframeee)
+cantidadEEporDepto = dd.sql(consultaSQL).df()
+print(cantidadEEporDepto)
 #%%
+consultaSQL = """
+                SELECT DISTINCT e.Cueanexo, e.id_depto, n.nivel
+                FROM EE AS e
+                INNER JOIN NIVELES_EN_EE AS n
+                ON n.Cueanexo = e.Cueanexo
+                    
+"""
 
+EEySusNiveles = dd.sql(consultaSQL).df()
+print(EEySusNiveles)
+#%%
+#juntamos las tablas para obtener provincia y nombre departamento de cada colegio
+#ademas de tener la columna nivel donde nos aclara todos los niveles que posee cada establecimiento
+consultaSQL = """
+              SELECT d.id_depto, e.Cueanexo, e.nivel, d.provincia, d.nombre_depto, d.pob_jardin, d.pob_primaria, d.pob_secundaria,
+              FROM CorreccionTolhuin AS d
+              INNER JOIN EEySusNiveles as e
+              ON d.id_depto = e.id_depto;
+              
+                    
+"""
 
+EEySusNivelesPD = dd.sql(consultaSQL).df()
+print(EEySusNivelesPD)
+#%%
+consultaSQL = """
+              SELECT provincia AS Provincia, nombre_depto AS Departamento,
+              SUM(CASE WHEN nivel = 'Nivel inicial - Jardín de infantes'
+                    THEN 1 ELSE 0 END) AS Jardines,
+              pob_jardin AS "Población Jardin",
+              SUM(CASE WHEN nivel = 'Primario'
+                    THEN 1 ELSE 0 END) AS Primarias,
+              pob_primaria AS "Población Primaria",
+              SUM(CASE WHEN nivel = 'Secundario'
+                    THEN 1 ELSE 0 END) AS Secundarios,
+              pob_secundaria AS "Población Secundaria"
+              FROM EEySusNivelesPD
+              GROUP BY Provincia, Departamento, "Población Jardin","Población Primaria","Población Secundaria"
+              ORDER BY Provincia, Departamento DESC;
+              
+              
+                    
+"""
+
+ConsignaUno = dd.sql(consultaSQL).df()
+print(ConsignaUno)
+
+#%%
 
 
 
