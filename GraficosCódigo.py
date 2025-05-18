@@ -33,8 +33,7 @@ ax.set_xlabel('', fontsize = '13', labelpad=8)
 ax.set_ylabel('CANTIDAD DE BP', fontsize = '13', labelpad=8)
 
 ax.set_ylim(0,567) 
- 
-ax.set_yticks([]) 
+
 ax.bar_label(ax.containers[0],fontsize=8)
 
 plt.xticks(rotation = 45, ha = "right")
