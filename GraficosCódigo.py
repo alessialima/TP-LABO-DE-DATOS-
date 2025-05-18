@@ -20,19 +20,26 @@ print(cantBPProv)
 
 # A partir de ahí armamos un gráfico de barras donde x = cada provincia y height = cantidad de bp que posee cada uno
 
-fig, ax = plt.subplots()  
+fig, ax = plt.subplots()
 
-ax.bar(data=cantBPProv,x="Provincia",height="Cant_BP", color='#660033') 
+ax.bar(data=cantBPProv,x="Provincia",height="Cant_BP", color='#660033') # es el código ese de html por si quieren cambiar o buscar uno !! elegí violeta
 
-ax.set_title('Cantidad de Bibliotecas Populares por Provincia') 
+ax.set_title('Cantidad de Bibliotecas Populares por Provincia') # si querés ponerle titulo es aqui
 
-ax.set_xlabel('PROVINCIAS', fontsize = '13', labelpad=20)  
-ax.set_ylabel('CANTIDAD DE BP', fontsize = '13', labelpad=20) 
+ax.set_xlabel('PROVINCIAS', fontsize = '13', labelpad=8) # labelpad cambia el espacio entre "provincias" y las prov en si !!!!! 
+ax.set_ylabel('CANTIDAD DE BP', fontsize = '13', labelpad=8) # fontsize es el tamaño de la letra 
 
-ax.set_ylim(0,30) # esto cambia el limite de y creo 
-
+ax.set_ylim(0,567) 
+ 
 ax.set_yticks([]) # saca los numeritos del eje y 
-ax.bar_label(ax.containers[0],fontsize=8) # pone los numeritos sobre cada columna 
+ax.bar_label(ax.containers[0],fontsize=8)
+
+plt.xticks(rotation = 45, ha = "right")
+plt.tight_layout()
+plt.figure(figsize=(12,6))
+
+ax.spines[["right", "top", "left"]].set_visible(False) # esto saca el rectangulo 
+
 
 
 #%% Ejercicio 2 
