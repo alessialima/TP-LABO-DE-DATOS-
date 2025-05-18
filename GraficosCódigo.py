@@ -81,4 +81,46 @@ ax.tick_params(axis="x", length=6,width=2)
 
 plt.tight_layout()
 plt.show()
-          
+
+#%% EJERCICIO 2
+import matplotlib.pyplot as plt
+import numpy as np
+# Configuración de colores y transparencia
+color_jardin = '#FF8C00'
+color_primaria = '#20B2AA'
+color_secundaria = '#FF00FF'
+transparencia = 0.3 #para poder visualizar las zonas con superposiciones
+
+# Posiciones fijas para cada nivel en el eje X, con jitter aleatorio, esto permite ver todos los valores del gráfico por más de que se superpongan.
+# Por ejemplo, si tenemos 3 deptos. con 200 jardines,  estos 3 se dibujan en posiciones como (0.1, 200), (-0.05, 200), (0.15, 200) para que no se vean como un único punto
+np.random.seed(0)
+x_jardin = np.random.normal(0, 0.2, size=len(Consulta1))
+x_primaria = np.random.normal(1, 0.2, size=len(Consulta1))
+x_secundaria = np.random.normal(2, 0.2, size=len(Consulta1))
+
+# Crear figura
+fig, ax = plt.subplots(figsize=(10, 10))
+# Scatter por nivel, el tamaño del punto representa la cantidad de población de manera proporcional
+ax.scatter(x_jardin, Consulta1['Jardines'], 
+            s=Consulta1['Población Jardin'] / 300, 
+            alpha=transparencia, color=color_jardin, label='Jardín')
+
+ax.scatter(x_primaria, Consulta1['Primarias'], 
+            s=Consulta1['Población Primaria'] / 300, 
+            alpha=transparencia, color=color_primaria, label='Primaria')
+
+ax.scatter(x_secundaria, Consulta1['Secundarios'], 
+            s=Consulta1['Población Secundaria'] / 300, 
+            alpha=transparencia, color=color_secundaria, label='Secundaria')
+
+# Etiquetas y estética
+ax.set_xticks([0, 1, 2], ['Jardín', 'Primaria', 'Secundaria'])
+ax.set_ylabel('Cantidad de Establecimientos')
+ax.set_xlabel('Nivel Educativo')
+ax.set_title('Establecimientos Educativos y Población por Departamento')
+ax.set_ylim(bottom=0)
+plt.tight_layout()
+
+# Mostrar el gráfico
+plt.show()
+
