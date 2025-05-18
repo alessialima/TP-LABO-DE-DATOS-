@@ -8,7 +8,7 @@ import seaborn as sns
 # En primer lugar, armamos un dataframe con los datos que obtenemos de Consulta3. Queremos saber la cant_BP por provincia de manera decreciente
 consultaSQL = """
               SELECT Provincia,
-              COUNT(Cant_BP) AS Cant_BP
+              SUM(Cant_BP) AS Cant_BP # CREO QUE ERA SUM Y NO LO CAMBIE !!! probar por las dudas
               FROM Consulta3
               GROUP BY Provincia
               ORDER BY Cant_BP DESC;
