@@ -20,7 +20,7 @@ print(cantBPProv)
 
 # A partir de ahí armamos un gráfico de barras donde x = cada provincia y height = cantidad de bp que posee cada uno
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(14,7)) 
 
 ax.bar(data=cantBPProv,x="Provincia",height="Cant_BP", color='#660033') # es el código ese de html por si quieren cambiar o buscar uno !! elegí violeta
 
