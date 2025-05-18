@@ -5,7 +5,9 @@ import seaborn as sns
 
 #%% Ejercicio 1 
 
-# En primer lugar, armamos un dataframe con los datos que obtenemos de Consulta3. Queremos saber la cant_BP por provincia de manera decreciente
+# En primer lugar, armamos un dataframe con los datos que obtenemos de Consulta3
+# Queremos saber la cant_BP por provincia de manera decreciente
+
 consultaSQL = """
               SELECT Provincia,
               SUM(Cant_BP) AS Cant_BP
@@ -22,21 +24,22 @@ print(cantBPProv)
 
 fig, ax = plt.subplots(figsize=(14,7)) 
 
-ax.bar(data=cantBPProv,x="Provincia",height="Cant_BP", color='#908ad1') # es el código ese de html por si quieren cambiar o buscar uno !! elegí violeta
+ax.bar(data=cantBPProv,x="Provincia",height="Cant_BP", color='#908ad1') 
 
-ax.set_title('Cantidad de Bibliotecas Populares por Provincia') # si querés ponerle titulo es aqui
+#Etiuetas y estética 
+ax.set_title('Cantidad de Bibliotecas Populares por Provincia') 
 
-ax.set_xlabel('', fontsize = '13', labelpad=8) # labelpad cambia el espacio entre "provincias" y las prov en si !!!!! 
-ax.set_ylabel('CANTIDAD DE BP', fontsize = '13', labelpad=8) # fontsize es el tamaño de la letra 
+ax.set_xlabel('', fontsize = '13', labelpad=8) 
+ax.set_ylabel('CANTIDAD DE BP', fontsize = '13', labelpad=8)
 
 ax.set_ylim(0,567) 
  
-ax.set_yticks([]) # saca los numeritos del eje y 
+ax.set_yticks([]) 
 ax.bar_label(ax.containers[0],fontsize=8)
 
 plt.xticks(rotation = 45, ha = "right")
 plt.tight_layout()
-plt.figure(figsize=(12,6))
+
 
 #%% EJERCICIO 2
 import matplotlib.pyplot as plt
@@ -82,13 +85,16 @@ plt.show()
 
 #%% Ejercicio 3 
 
+#Crear figura 
 fig, ax = plt.subplots(figsize=(14,7))
 
+#Buscamos ordenar los bloxplot de las provincias según la mediana 
 ordenMediana = Consulta3.groupby("Provincia")["Cant_EE"].median().sort_values().index
 
 sns.boxplot(x="Provincia", y="Cant_EE", data=Consulta3, ax = ax, color = "#8dd18a", order = ordenMediana) 
 
-ax.set_title("Cantidad de Establecimientos Educativos por cada departamento de la Provincia", pad = 30)
+#Estética y etiquetas
+ax.set_title("Cantidad de Establecimientos Educativos por cada departamento de las Provincias", pad = 30)
 
 ax.set_xlabel('')
 ax.set_ylabel('Cantidad de Establecimientos Educativos', labelpad=20) 
@@ -96,5 +102,6 @@ ax.set_ylim(0,567)
 
 
 plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+plt.show()
 
 #%% 
