@@ -5,29 +5,35 @@ import seaborn as sns
 
 #%% Ejercicio 1 
 
-"i) Cantidad de BP por provincia. Mostrarlos ordenados de manera decreciente por dicha cantidad."
+# En primer lugar, armamos un dataframe con los datos que obtenemos de Consulta3. Queremos saber la cant_BP por provincia de manera decreciente
+consultaSQL = """
+              SELECT Provincia,
+              COUNT(Cant_BP) AS Cant_BP
+              FROM Consulta3
+              GROUP BY Provincia
+              ORDER BY Cant_BP DESC;
+              """
 
-# es un dataframe de ejemplo que usé para practicar 
-hola = pd.DataFrame({'Provincias': ['Buenos Aires','CABA','Catamarca','Chaco','Chubut'],'Cantidad': [40, 32, 23, 17, 3]
-})
+cantBPProv = dd.sql(consultaSQL).df()
 
-# a partir del dataframe del ejercicio iii) podemos primero acá ordenar de manera DECRECIENTE la cantidad de BP por provincia
-# luego, gráfico: 
+print(cantBPProv)
 
-fig, ax = plt.subplots()
+# A partir de ahí armamos un gráfico de barras donde x = cada provincia y height = cantidad de bp que posee cada uno
 
-ax.bar(data=hola,x='Provincias',height='Cantidad', color='#660033') # es el código ese de html por si quieren cambiar o buscar uno !! elegí violeta
+fig, ax = plt.subplots()  
 
-ax.set_title('tituloooo') # si querés ponerle titulo es aqui
+ax.bar(data=cantBPProv,x="Provincia",height="Cant_BP", color='#660033') 
 
-ax.set_xlabel('PROVINCIAS', fontsize = '13', labelpad=19) # labelpad cambia el espacio entre "provincias" y las prov en si !!!!! 
-ax.set_ylabel('CANTIDAD DE BP', fontsize = '13') # fontsize es el tamaño de la letra 
+ax.set_title('Cantidad de Bibliotecas Populares por Provincia') 
 
+ax.set_xlabel('PROVINCIAS', fontsize = '13', labelpad=20)  
+ax.set_ylabel('CANTIDAD DE BP', fontsize = '13', labelpad=20) 
 
-ax.set_ylim(0,50) # donde puse 50 pone la cantidad maxima + 1 de cant_bp (es el y maximo)
+ax.set_ylim(0,30) # esto cambia el limite de y creo 
 
-plt.tight_layout() # creo que ajusta los espacios entre columnas(????? segun google qcy)
 ax.set_yticks([]) # saca los numeritos del eje y 
+ax.bar_label(ax.containers[0],fontsize=8) # pone los numeritos sobre cada columna 
+
 
 #%% Ejercicio 2 
 
