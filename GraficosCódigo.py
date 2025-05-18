@@ -45,9 +45,9 @@ plt.tight_layout()
 import matplotlib.pyplot as plt
 import numpy as np
 # Configuración de colores y transparencia
-color_jardin = '#FF8C00'
-color_primaria = '#20B2AA'
-color_secundaria = '#FF00FF'
+color_jardin = '#ae75e4'
+color_primaria = '#75e4ab'
+color_secundaria = '#ffb35a'
 transparencia = 0.3 #para poder visualizar las zonas con superposiciones
 
 # Posiciones fijas para cada nivel en el eje X, con jitter aleatorio, esto permite ver todos los valores del gráfico por más de que se superpongan.
