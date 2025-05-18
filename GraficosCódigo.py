@@ -40,48 +40,6 @@ plt.figure(figsize=(12,6))
 
 ax.spines[["right", "top", "left"]].set_visible(False) # esto saca el rectangulo 
 
-
-
-#%% Ejercicio 2 
-
-
-fig, ax = plt.subplots()
-
-width = 400  # elegir un numero que funque
-bins = np.arange((Consulta1["Población Jardin"]).min(), (Consulta1["Población Jardin"]).max()+width, width) # auxilio
-# me arma un rango para los bins 
-
-# cuenta que datos se meten en cada bin
-counts, bins = np.histogram(Consulta1['Jardines'], bins = bins)
-
-#centro el bin 
-center = (bins[:-1]+bins[1:]) /2 
-
-
-ax.bar(x=center,
-       height=counts,
-       align="center",
-       color="skyblue",
-       edgecolor="black")
-
-#titulos ahre
-ax.set_title("titulo")
-ax.set_xlabel("equis")
-ax.set_ylabel("y")
-
-# anota el rango en x
-
-labels = [f'({int(bins[i])},{int(bins[i+1])}]'
-          for i in range(len(bins)-1)]
-
-ax.set_xticks(center[::10])
-ax.set_xticklabels(labels[::10], rotation=90,fontsize=12)
-ax.tick_params(axis="x", length=6,width=2)
-
-
-plt.tight_layout()
-plt.show()
-
 #%% EJERCICIO 2
 import matplotlib.pyplot as plt
 import numpy as np
