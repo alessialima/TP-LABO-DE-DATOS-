@@ -104,4 +104,36 @@ ax.set_ylim(0,567)
 plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
 plt.show()
 
-#%% 
+#%% Grafico 4 version entera
+import matplotlib.pyplot as plt
+# Calcular BP y EE por mil habitantes sin modificar el DataFrame
+bp_por_mil = (Consulta3["Cant_BP"] / Consulta3["Población"]) * 1000
+ee_por_mil = (Consulta3["Cant_EE"] / Consulta3["Población"]) * 1000
+# Crear el gráfico de dispersión
+plt.figure(figsize=(10, 10))
+plt.scatter(bp_por_mil, ee_por_mil, color="#ae75e4", alpha=0.6)
+# Configurar el gráfico
+plt.xlabel("Cantidad de BP cada mil habitantes")
+plt.ylabel("Cantidad de EE cada mil habitantes")
+plt.title("Relación entre BP y EE por cada mil habitantes por Departamento")
+plt.grid(True)
+plt.xlim(0,2.5)
+plt.ylim(0,13)
+plt.tight_layout()
+plt.show()
+#%% Grafico 4 version recortada, un "zoom"
+# Calcular BP y EE por mil habitantes sin modificar el DataFrame
+bp_por_mil = (Consulta3["Cant_BP"] / Consulta3["Población"]) * 1000
+ee_por_mil = (Consulta3["Cant_EE"] / Consulta3["Población"]) * 1000
+# Crear el gráfico de dispersión
+plt.figure(figsize=(10, 10))
+plt.scatter(bp_por_mil, ee_por_mil, color="#ae75e4", alpha=0.6)
+# Configurar el gráfico
+plt.xlabel("Cantidad de BP cada mil habitantes")
+plt.ylabel("Cantidad de EE cada mil habitantes")
+plt.title("Relación entre BP y EE por cada mil habitantes por Departamento")
+plt.grid(True)
+plt.xlim(0,0.6)
+plt.ylim(0,10)
+plt.tight_layout()
+plt.show()
