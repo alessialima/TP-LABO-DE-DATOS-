@@ -68,6 +68,21 @@ for i in range(20):
 plt.suptitle('Algunos Ejemplos de Clase 8', fontsize=25)
 plt.tight_layout()
 plt.show()
+
+#%% Analisis de variabilidad de todas las clases
+for j in range (10):
+    plt.figure(figsize=(15, 8))
+    bolsos = X[Y == j].sample(20)  # buscamos 20 sandalias aleatorios
+    
+    for i in range(20):
+        plt.subplot(4, 5, i+1)
+        img = bolsos.iloc[i].values.reshape(28, 28)
+        plt.imshow(img, cmap='gray')
+        plt.axis('off')
+        
+    plt.suptitle(f"Algunos Ejemplos de Clase {j}", fontsize=25)
+    plt.tight_layout()
+    plt.show()
 #%%
 # Función para mostrar comparación entre dos clases
 def compararClases(label1, label2, title):
