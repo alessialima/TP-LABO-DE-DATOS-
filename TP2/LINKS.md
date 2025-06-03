@@ -16,7 +16,7 @@ no me gusta a mi esto pq hay mas tacones que botines pero alla ellos
 
 ## 
 * cada fila es una imagen
-* label = clase
+* label = clase (última columna)
 * unnamed 0 = index 
 * el resto son pixeles
 * valor oscuridad del 1 al 255 
