@@ -6,7 +6,7 @@ info sobre el database: https://www.kaggle.com/datasets/zalando-research/fashion
 1: pantalón
 2: buzo
 3: vestido 
-4: capas ??
+4: capas ?? seriá ABRIGO
 5: sandalia
 6: camisa
 7: zapatillas
