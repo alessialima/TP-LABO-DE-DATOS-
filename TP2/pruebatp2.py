@@ -55,3 +55,43 @@ for i in range(10):
 plt.suptitle('Imágenes Promedio por Clase', fontsize=25)
 plt.show()
 #%%
+# Analisis de variabilidad clase 8
+plt.figure(figsize=(15, 8))
+bolsos = X[Y == 8].sample(20)  # buscamos 20 bolsos aleatorios
+
+for i in range(20):
+    plt.subplot(4, 5, i+1)
+    img = bolsos.iloc[i].values.reshape(28, 28)
+    plt.imshow(img, cmap='gray')
+    plt.axis('off')
+    
+plt.suptitle('Algunos Ejemplos de Clase 8', fontsize=25)
+plt.tight_layout()
+plt.show()
+#%%
+# Función para mostrar comparación entre dos clases
+def compararClases(label1, label2, title):
+    clase1 = X[Y == label1].sample(5)
+    clase2 = X[Y == label2].sample(5)
+    fig, axes = plt.subplots(2, 5, figsize=(20, 4))
+    fig.suptitle(title, fontsize=20, y=1.05)
+    
+    # Usamos dos for in range para obtener imagenes de las dos distintas clases
+    for i in range(5):
+        img = clase1.iloc[i].values.reshape(28, 28)
+        axes[0, i].imshow(img, cmap='gray')
+        axes[0, i].axis('off')
+    for i in range(5):
+        img = clase2.iloc[i].values.reshape(28, 28)
+        axes[1, i].imshow(img, cmap='gray')
+        axes[1, i].axis('off')
+    
+    plt.tight_layout()
+    plt.show()
+
+# Figurar 1 de ejercicio 1.b
+compararClases(2, 1, "Comparación entre Sueter y Pantalón")
+
+# Figura 2 de ejercicio 1.b
+compararClases(2, 6, "Comparación entre Sueter y Camisa")
+#%%
