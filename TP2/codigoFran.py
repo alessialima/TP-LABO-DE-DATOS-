@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import seaborn as sns
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
@@ -110,3 +110,107 @@ compararClases(2, 1, "Comparación entre Sueter y Pantalón")
 # Figura 2 de ejercicio 1.b
 compararClases(2, 6, "Comparación entre Sueter y Camisa")
 #%%
+#%% Punto 3 a
+
+
+# Separamos los datos en desarrollo dev (80%) y validación heldout (20%)
+X_dev, X_heldout, Y_dev, Y_heldout = train_test_split(
+    X, Y,
+    test_size=0.2,          
+    stratify=Y,
+    random_state=42
+)
+
+
+#%% b
+#Ajustamos un modelo de arbol de decisión y lo entrenamos con distintas profundidades del 1 al 10
+train_scores = []
+test_scores = []
+
+for profundidad in range(1, 11):
+    tree = DecisionTreeClassifier(
+        max_profundidad= profundidad,
+        random_state=42
+    )
+    tree.fit(X_dev, Y_dev)
+    
+    train_acc = tree.score(X_dev, Y_dev)
+    test_acc = tree.score(X_heldout, Y_heldout)
+    
+    train_scores.append(train_acc)
+    test_scores.append(test_acc)
+
+
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, 11), train_scores, 'o-', label='Train')
+plt.plot(range(1, 11), test_scores, 'o-', label='Test')
+plt.xlabel('Profundidad del Árbol')
+plt.ylabel('Exactitud')
+plt.title('Rendimiento vs Profundidad del Árbol')
+plt.xticks(range(1, 11))
+plt.legend()
+plt.grid(True)
+plt.show()
+
+#%% c. Búsqueda de hiperparámetros con validación cruzada
+param_grid = {
+    'max_depth': [5, 7, 9, 11, 13],      # Rangos optimizados
+    'min_samples_split': [5, 10, 20],
+    'min_samples_leaf': [2, 4, 8],
+    'max_features': ['sqrt', None]        # Reducción para eficiencia
+}
+
+tree = DecisionTreeClassifier(random_state=42)
+grid_search = GridSearchCV(
+    estimator=tree,
+    param_grid=param_grid,
+    cv=3,                   # 3-fold para mayor velocidad
+    scoring='accuracy',
+    n_jobs=-1,              # Paralelizar usando todos los núcleos
+    verbose=1               # Mostrar progreso
+)
+
+grid_search.fit(X_dev, Y_dev)
+
+# Resultados de la búsqueda
+best_params = grid_search.best_params_
+best_score = grid_search.best_score_
+print(f"\nMejores parámetros: {best_params}")
+print(f"Mejor accuracy en validación cruzada: {best_score:.4f}")
+
+#%% d. Evaluación final con conjunto held-out
+best_tree = DecisionTreeClassifier(**best_params, random_state=42)
+best_tree.fit(X_dev, Y_dev)
+
+# Predecir y evaluar
+y_pred = best_tree.predict(X_heldout)
+heldout_acc = accuracy_score(Y_heldout, y_pred)
+print(f"\nAccuracy en conjunto held-out: {heldout_acc:.4f}")
+
+# Matriz de confusión
+cm = confusion_matrix(Y_heldout, y_pred)
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm, 
+    display_labels=clases
+)
+
+plt.figure(figsize=(12, 10))
+disp.plot(cmap='Blues', values_format='d', xticks_rotation=45)
+plt.title('Matriz de Confusión (Conjunto Held-out)')
+plt.tight_layout()
+plt.show()
+
+# Análisis de errores
+error_rates = cm / cm.sum(axis=1)[:, np.newaxis]
+np.fill_diagonal(error_rates, 0)  # Eliminar aciertos
+
+max_errors = []
+for i in range(10):
+    for j in range(10):
+        if i != j and error_rates[i, j] > 0.01:  # Filtrar errores significativos
+            max_errors.append((i, j, error_rates[i, j]))
+
+max_errors.sort(key=lambda x: x[2], reverse=True)
+print("\nPrincipales confusiones:")
+for i, j, rate in max_errors[:10]:
+    print(f"{clases[i]} → {clases[j]}: {rate:.2%}")
