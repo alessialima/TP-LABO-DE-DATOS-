@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split, cross_val_score, GridSearc
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
-
+import duckdb as dd
 #%%
 carpetaOriginal = os.path.dirname(os.path.abspath(__file__))
 ruta_moda = os.path.join(carpetaOriginal, "Fashion-MNIST.csv", ) 
@@ -21,7 +21,7 @@ Y = fashion['label']
 #%%
 # Plot imagen
 img = np.array(X.iloc[12]).reshape((28,28))
-plt.imshow(img, cmap='gray')
+plt.imshow(img, cmap='bwr')
 plt.colorbar()
 plt.show()
 #%%
@@ -49,40 +49,41 @@ for i in range(10):
     label = (Y == i)
     if np.sum(label) > 0:
         img = np.mean(X[label], axis=0).to_numpy().reshape(28, 28)
-        plt.imshow(img, cmap='gray')
+        plt.imshow(img, cmap='bwr')
         plt.title(clases[i])
         plt.axis('off')
 plt.suptitle('Imágenes Promedio por Clase', fontsize=25)
 plt.show()
 #%%
-# Analisis de variabilidad clase 8
-plt.figure(figsize=(15, 8))
-bolsos = X[Y == 8].sample(20)  # buscamos 20 bolsos aleatorios
+# Analisis de variabilidad clase 0
+plt.figure(figsize=(15, 15))
+bolsos = X[Y == 0].sample(100)  # buscamos 20 remeras aleatorias
 
-for i in range(20):
-    plt.subplot(4, 5, i+1)
+for i in range(100):
+    plt.subplot(10, 10, i+1)
     img = bolsos.iloc[i].values.reshape(28, 28)
-    plt.imshow(img, cmap='gray')
+    plt.imshow(img, cmap='bwr')
+    plt.axis('off')
+    
+plt.suptitle('Algunos Ejemplos de Clase 0', fontsize=25)
+plt.tight_layout()
+plt.show()
+#%%
+# Analisis de variabilidad clase 8
+plt.figure(figsize=(15, 15))
+bolsos = X[Y == 8].sample(100)  # buscamos 20 bolsos aleatorios
+
+for i in range(100):
+    plt.subplot(10, 10, i+1)
+    img = bolsos.iloc[i].values.reshape(28, 28)
+    plt.imshow(img, cmap='bwr')
     plt.axis('off')
     
 plt.suptitle('Algunos Ejemplos de Clase 8', fontsize=25)
 plt.tight_layout()
 plt.show()
 
-#%% Analisis de variabilidad de todas las clases
-for j in range (10):
-    plt.figure(figsize=(15, 8))
-    bolsos = X[Y == j].sample(20)  # buscamos 20 sandalias aleatorios
-    
-    for i in range(20):
-        plt.subplot(4, 5, i+1)
-        img = bolsos.iloc[i].values.reshape(28, 28)
-        plt.imshow(img, cmap='gray')
-        plt.axis('off')
-        
-    plt.suptitle(f"Algunos Ejemplos de Clase {j}", fontsize=25)
-    plt.tight_layout()
-    plt.show()
+
 #%%
 # Función para mostrar comparación entre dos clases
 def compararClases(label1, label2, title):
@@ -94,11 +95,11 @@ def compararClases(label1, label2, title):
     # Usamos dos for in range para obtener imagenes de las dos distintas clases
     for i in range(5):
         img = clase1.iloc[i].values.reshape(28, 28)
-        axes[0, i].imshow(img, cmap='gray')
+        axes[0, i].imshow(img, cmap='bwr')
         axes[0, i].axis('off')
     for i in range(5):
         img = clase2.iloc[i].values.reshape(28, 28)
-        axes[1, i].imshow(img, cmap='gray')
+        axes[1, i].imshow(img, cmap='bwr')
         axes[1, i].axis('off')
     
     plt.tight_layout()
@@ -109,6 +110,137 @@ compararClases(2, 1, "Comparación entre Sueter y Pantalón")
 
 # Figura 2 de ejercicio 1.b
 compararClases(2, 6, "Comparación entre Sueter y Camisa")
+#%% CLASIFICACIÓN BINARIA
+# subconjunto clases 0 y 8
+subconjunto_0_8 = dd.sql("""SELECT *
+                FROM fashion
+                WHERE label = 0 OR label = 8;""").df()
+# este subconjunto está balanceado, se tienen 7000 muestras de cada clase (según lo analizado en el punto 1)
+# siguiendo la logica vista, separamos el 85% para train y el restante 15% para test
+df_0 = dd.sql("""
+    SELECT *
+    FROM subconjunto_0_8
+    WHERE label = 0
+    LIMIT 5950
+""").df()
+
+df_8 = dd.sql("""
+    SELECT *
+    FROM subconjunto_0_8
+    WHERE label = 8
+    LIMIT 5950
+""").df()
+
+subconjunto_0_8_TRAIN = pd.concat([df_0, df_8]).sample(frac=1, random_state=1)  # barajamos
+# df y train tienen las mismas columnas
+diferencia = subconjunto_0_8.merge(subconjunto_0_8_TRAIN, how='outer', indicator=True)
+subconjunto_0_8_TEST = diferencia[diferencia['_merge'] == 'left_only'].drop(columns=['_merge'])
+#%% KNN
+# Promedio de píxeles por clase
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+
+# Mostrar diferencia promedio entre clases
+diferencia = (remeras - bolsos).values.reshape(28, 28)
+
+plt.imshow(diferencia, cmap='bwr')
+plt.colorbar()
+plt.title("Diferencia promedio (remera - bolso)")
+plt.show()
+#%%
+# Gracias al gráfico podemos ver más fácilmente los atributos que diferencian estas dos clases
+# Para facilitar el proceso creamos una función que nos devuelva el índice del píxel según la coordenada deseada
+def coordenada_a_indice(fila, columna):
+    return fila * 28 + columna
+
+# Píxeles seleccionados
+p1 = coordenada_a_indice(5, 5)     # manga izquierda roja
+p2 = coordenada_a_indice(25, 14)   # sección roja inferior
+p3 = coordenada_a_indice(15, 2)    # costado azul izquierdo
+p4 = coordenada_a_indice(15, 25)   # costado azul derecho 
+combinaciones = {
+    "Combo 1 (2 pixeles)": [p1, p3],
+    "Combo 2 (3 pixeles)": [p1, p2, p3],
+    "Combo 3 (3 pixeles)": [p1, p3, p4],
+    "Combo 4 (4 pixeles)": [p1, p2, p3, p4],
+}
+
+valores_k = [1, 15, 40, 100]
+resultados = []
+
+# Etiquetas
+y_train = subconjunto_0_8_TRAIN["label"].values
+y_test = subconjunto_0_8_TEST["label"].values
+
+# Evaluación
+for nombre, atributos in combinaciones.items():
+    X_train = subconjunto_0_8_TRAIN.iloc[:, atributos].values
+    X_test = subconjunto_0_8_TEST.iloc[:, atributos].values
+
+    for k in valores_k:
+        modelo = KNeighborsClassifier(n_neighbors=k)
+        modelo.fit(X_train, y_train)
+        y_pred = modelo.predict(X_test)
+        acc = accuracy_score(y_test, y_pred)
+
+        resultados.append({
+            "combinacion": nombre,
+            "k": k,
+            "accuracy": acc
+        })
+
+# Mostrar resultados
+df_resultados = pd.DataFrame(resultados)
+print(df_resultados.sort_values(by="accuracy", ascending=False))
+# Guiándonos por la exactitud, el mejor modelo de estas combinaciones sería el que toma los 4 píxeles de atributo y un k=100
+#%%
+
+
+
+## VEAMOS SI QUEREMOS DEJAR ESTO PQ TIENE MENOS EXACTITUD XDDD
+
+
+# Pensamos que podría estar bueno utilizar como atributo ciertos cálculos con los píxeles, más que usarlos individualmente 
+# Por ejemplo, definimos una función que nos ayude a identificar si hay una correa de bolso en la parte superior viendo el promedio 
+# de píxeles en la parte superior.
+# También notamos que los bolsos suelen ser más anchos que las remeras, así que buscamos el ancho máximo de píxeles en la imagen
+# Pixeles (columnas 0 a 783)
+X_train_pixels = subconjunto_0_8_TRAIN.iloc[:, 0:784].values
+X_test_pixels = subconjunto_0_8_TEST.iloc[:, 0:784].values
+
+# Etiquetas
+y_train = pd.concat([df_0, df_8]).sample(frac=1, random_state=1)["label"].values
+y_test = subconjunto_0_8_TEST["label"].values
+
+
+def calcular_promedio_superior(imagen_flat):
+    imagen = imagen_flat.reshape(28, 28)
+    franja = imagen[:5, :]  # Primeras 5 filas
+    pixeles_no_cero = franja[franja > 0]
+    return np.mean(pixeles_no_cero) if len(pixeles_no_cero) > 0 else 0
+def calcular_ancho_maximo(imagen_flat):
+    imagen = imagen_flat.reshape(28, 28)
+    anchos = [np.count_nonzero(fila) for fila in imagen]
+    return max(anchos)
+
+# Aplicar la función a cada imagen
+# Para TRAIN
+X_train_feat_correa = np.array([calcular_promedio_superior(x) for x in X_train_pixels])
+X_train_feat_ancho = np.array([calcular_ancho_maximo(x) for x in X_train_pixels])
+X_train_feat = np.column_stack((X_train_feat_correa, X_train_feat_ancho))  # shape: (n_samples, 2)
+
+# Para TEST
+X_test_feat_correa = np.array([calcular_promedio_superior(x) for x in X_test_pixels])
+X_test_feat_ancho = np.array([calcular_ancho_maximo(x) for x in X_test_pixels])
+X_test_feat = np.column_stack((X_test_feat_correa, X_test_feat_ancho))
+
+# Entrenar KNN y evaluar
+clasificador = KNeighborsClassifier(n_neighbors=40)
+clasificador.fit(X_train_feat, y_train)
+y_pred = clasificador.predict(X_test_feat)
+
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Exactitud del modelo con 2 atributos (correa + ancho): {accuracy:.4f}")
 #%%
 #%% Punto 3 a
 
