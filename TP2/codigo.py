@@ -346,3 +346,20 @@ max_errors.sort(key=lambda x: x[2], reverse=True)
 print("\nPrincipales confusiones:")
 for i, j, rate in max_errors[:10]:
     print(f"{clases[i]} → {clases[j]}: {rate:.2%}")
+
+#%% 
+# En el informe hay una parte al inicio que muestra ejemplos de 3 clases . use esto para armar el grafiquito 
+plt.figure(figsize=(15, 15))
+bolsos = X[Y == 5].sample(20)  # buscamos 20 bolsos aleatorios
+
+for i in range(20):
+    plt.subplot(10, 10, i+1)
+    img = bolsos.iloc[i].values.reshape(28, 28)
+    plt.imshow(img, cmap='bwr')
+    plt.axis('off')
+    
+plt.suptitle('Algunos Ejemplos de Clase 5', fontsize=25)
+plt.tight_layout()
+plt.show()
+
+
