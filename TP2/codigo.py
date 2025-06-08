@@ -18,7 +18,7 @@ fashion = pd.read_csv(ruta_moda, index_col=0)
 # Y para las etiquetas, (el tipo de prenda al cual pertenece)
 X = fashion.drop('label', axis=1)
 Y = fashion['label']
-#%%
+#%% ESTO DESPUES LO SACAMOS NO?
 # Plot imagen
 img = np.array(X.iloc[12]).reshape((28,28))
 plt.imshow(img, cmap='bwr')
@@ -35,7 +35,7 @@ clases = [
 plt.figure(figsize=(12, 6))
 unique, counts = np.unique(Y, return_counts=True)
 plt.bar([clases[i] for i in unique], counts)
-plt.title("Cantidad Imagenes por Prenda de Fashion MNIST")
+plt.title("Cantidad Imagenes por Clase de Fashion MNIST")
 plt.xlabel("Prendas de Ropa")
 plt.ylabel("Cantidad")
 plt.show()
@@ -50,9 +50,13 @@ for i in range(10):
     if np.sum(label) > 0:
         img = np.mean(X[label], axis=0).to_numpy().reshape(28, 28)
         plt.imshow(img, cmap='bwr')
-        plt.title(clases[i])
+        plt.title(clases[i], fontsize=20) 
         plt.axis('off')
-plt.suptitle('Imágenes Promedio por Clase', fontsize=25)
+
+# espacio entre imágenes
+plt.subplots_adjust(wspace=0.08, hspace=0.08)  
+
+plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 plt.show()
 #%%
 # Analisis de variabilidad clase 0
@@ -89,8 +93,8 @@ plt.show()
 def compararClases(label1, label2, title):
     clase1 = X[Y == label1].sample(5)
     clase2 = X[Y == label2].sample(5)
-    fig, axes = plt.subplots(2, 5, figsize=(20, 4))
-    fig.suptitle(title, fontsize=20, y=1.05)
+    fig, axes = plt.subplots(2, 5, figsize=(10, 3))
+    fig.suptitle(title, fontsize=16, y=1.05)
     
     # Usamos dos for in range para obtener imagenes de las dos distintas clases
     for i in range(5):
@@ -102,7 +106,8 @@ def compararClases(label1, label2, title):
         axes[1, i].imshow(img, cmap='bwr')
         axes[1, i].axis('off')
     
-    plt.tight_layout()
+    
+    plt.subplots_adjust(wspace=0.05, hspace=0.05)  
     plt.show()
 
 # Figurar 1 de ejercicio 1.b
@@ -110,6 +115,9 @@ compararClases(2, 1, "Comparación entre Sueter y Pantalón")
 
 # Figura 2 de ejercicio 1.b
 compararClases(2, 6, "Comparación entre Sueter y Camisa")
+
+# Figura clasificación binaria
+compararClases(0, 8, "Comparación entre Remera y Bolso")
 #%% CLASIFICACIÓN BINARIA
 # subconjunto clases 0 y 8
 subconjunto_0_8 = dd.sql("""SELECT *
@@ -143,21 +151,46 @@ bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784
 # Mostrar diferencia promedio entre clases
 diferencia = (remeras - bolsos).values.reshape(28, 28)
 
-plt.imshow(diferencia, cmap='bwr')
+# índices ordenados según el valor al que refieren de menor a mayor 
+flat = diferencia.flatten()
+indices_ordenados = np.argsort(flat)
+
+# 4 más azules (valores mínimos)
+indices_mas_azules = indices_ordenados[:2] #quiero seleccionar los primeros 2 más azules
+coordenadas_azules = [divmod(idx, 28) for idx in indices_mas_azules] #para la cuenta recuerdo que hice la transformación, por eso el divmod
+
+# 4 más rojos (valores máximos)
+indices_mas_rojos = indices_ordenados[-2:] #los últimos dos corresponden a los dos más rojos
+coordenadas_rojos = [divmod(idx, 28) for idx in indices_mas_rojos]
+
+# Convertir coordenadas a enteros normales
+coordenadas_azules = [(int(x), int(y)) for x, y in coordenadas_azules]
+coordenadas_rojos = [(int(x), int(y)) for x, y in coordenadas_rojos]
+
+print("Pixeles más azules:", coordenadas_azules)
+print("Pixeles más rojos:", coordenadas_rojos)
+
+plt.imshow(diferencia, cmap='bwr', vmin=-150, vmax=150)
 plt.colorbar()
 plt.title("Diferencia promedio (remera - bolso)")
+ticks = np.arange(0, 28, 2)
+plt.xticks(ticks, ticks, rotation=45, fontsize=8)
+plt.yticks(ticks, ticks, fontsize=8)
+
+plt.tight_layout()
 plt.show()
+
 #%%
 # Gracias al gráfico podemos ver más fácilmente los atributos que diferencian estas dos clases
 # Para facilitar el proceso creamos una función que nos devuelva el índice del píxel según la coordenada deseada
 def coordenada_a_indice(fila, columna):
     return fila * 28 + columna
 
-# Píxeles seleccionados
-p1 = coordenada_a_indice(5, 5)     # manga izquierda roja
-p2 = coordenada_a_indice(25, 14)   # sección roja inferior
-p3 = coordenada_a_indice(15, 2)    # costado azul izquierdo
-p4 = coordenada_a_indice(15, 25)   # costado azul derecho 
+# Píxeles seleccionados más rojos y más azules
+p1 = coordenada_a_indice(19, 22)    
+p2 = coordenada_a_indice(18, 22)   
+p3 = coordenada_a_indice(2, 14)   
+p4 = coordenada_a_indice(1, 11)   
 combinaciones = {
     "Combo 1 (2 pixeles)": [p1, p3],
     "Combo 2 (3 pixeles)": [p1, p2, p3],
@@ -261,7 +294,7 @@ test_scores = []
 
 for profundidad in range(1, 11):
     tree = DecisionTreeClassifier(
-        max_profundidad= profundidad,
+        max_depth= profundidad,
         random_state=42
     )
     tree.fit(X_dev, Y_dev)
@@ -286,7 +319,7 @@ plt.show()
 
 #%% c. Búsqueda de hiperparámetros con validación cruzada
 param_grid = {
-    'max_depth': [5, 7, 9, 11, 13],      # Rangos optimizados
+    'max_depth': [5, 7, 9, 11, 13],      # Rangos optimizados, OJO ERA HASTA 10 DE PROFUNDIDAD
     'min_samples_split': [5, 10, 20],
     'min_samples_leaf': [2, 4, 8],
     'max_features': ['sqrt', None]        # Reducción para eficiencia
@@ -321,13 +354,19 @@ print(f"\nAccuracy en conjunto held-out: {heldout_acc:.4f}")
 
 # Matriz de confusión
 cm = confusion_matrix(Y_heldout, y_pred)
-disp = ConfusionMatrixDisplay(
-    confusion_matrix=cm, 
-    display_labels=clases
-)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=clases)
 
 plt.figure(figsize=(12, 10))
 disp.plot(cmap='Blues', values_format='d', xticks_rotation=45)
+
+# Ajuste: reducir tamaño del texto en las celdas
+for text in disp.text_.ravel():
+    text.set_fontsize(7)
+
+# Etiquetas en español
+disp.ax_.set_xlabel("Etiqueta Predicha", fontsize=12)
+disp.ax_.set_ylabel("Etiqueta Verdadera", fontsize=12)
+
 plt.title('Matriz de Confusión (Conjunto Held-out)')
 plt.tight_layout()
 plt.show()
@@ -347,10 +386,10 @@ print("\nPrincipales confusiones:")
 for i, j, rate in max_errors[:10]:
     print(f"{clases[i]} → {clases[j]}: {rate:.2%}")
 
-#%% 
+#%% ESTO LO BORRAMOS?
 # En el informe hay una parte al inicio que muestra ejemplos de 3 clases . use esto para armar el grafiquito 
 plt.figure(figsize=(15, 15))
-bolsos = X[Y == 5].sample(20)  # buscamos 20 bolsos aleatorios
+bolsos = X[Y == 5].sample(20)  
 
 for i in range(20):
     plt.subplot(10, 10, i+1)
@@ -361,5 +400,4 @@ for i in range(20):
 plt.suptitle('Algunos Ejemplos de Clase 5', fontsize=25)
 plt.tight_layout()
 plt.show()
-
 
