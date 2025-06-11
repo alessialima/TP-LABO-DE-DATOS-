@@ -272,7 +272,21 @@ for nombre, atributos in combinaciones.items():
 df_resultados = pd.DataFrame(resultados)
 print(df_resultados.sort_values(by="accuracy", ascending=False))
 # Guiándonos por la exactitud, el mejor modelo de estas combinaciones sería el que toma los 4 píxeles de atributo y un k=100
+#%% Matriz de Confusión (chequear pq no se si esta bien)
 
+y_pred = modelo.predict(X_test)
+
+cmKNN = confusion_matrix(y_test,y_pred)
+dispKNN = ConfusionMatrixDisplay(confusion_matrix=cmKNN, display_labels=[0,8])
+
+plt.figure(figsize=(12, 10))
+dispKNN.plot(cmap='viridis', values_format='d')
+
+dispKNN.ax_.set_xlabel("Predicted", fontsize=12)
+dispKNN.ax_.set_ylabel("Actual", fontsize=12)
+
+plt.tight_layout()
+plt.show()
 #%%
 # Entre los experimentos planteados, presentamos uno que nos ha devuelto una menor exactitud. 
 # El mismo será el siguiente: 
