@@ -27,7 +27,7 @@ clases = [
     'Sandalia', 'Camisa', 'Zapatilla', 'Bolso', 'Botita'
 ]
 
-# obs: veamos que hay una misma cantidad de prendas por clase (operación que demuestra lo visto en el gráfico anterior)
+# obs: veamos que hay una misma cantidad de prendas por clase 
 cantidadPrendasPorClase = fashion['label'].value_counts() 
 print(cantidadPrendasPorClase)
 
