@@ -20,8 +20,21 @@ X = fashion.drop('label', axis=1)
 Y = fashion['label']
 
 #%%
-# Contamos con estas 10 prendas que, con ayuda del github del Fashion-MNIST podemos observar a qué número pertenece
-# cada prenda, 0 es Remera, 1 es Pantalon y así hasta 9 que es Ankle Boot (Botita)
+"""
+Contamos con 10 prendas que, con ayuda del github de Fashion-MNIST, 
+podemos observar a qué número de clase pertenece cada tipo de prenda:
+0 = Remera
+1 = Pantalón
+2 = Suéter
+3 = Vestido
+4 = Abrigo
+5 = Sandalia
+6 = Camisa
+7 = Zapatillas
+8 = Bolsa
+9 = Botita
+"""
+
 clases = [
     'Remera', 'Pantalón', 'Suéter', 'Vestido', 'Abrigo',
     'Sandalia', 'Camisa', 'Zapatilla', 'Bolso', 'Botita'
@@ -39,17 +52,9 @@ plt.title("Cantidad Imagenes por Clase de Fashion MNIST")
 plt.xlabel("Prendas de Ropa")
 plt.ylabel("Cantidad")
 plt.show()
-# Se puede observar que hay 7000 imagenes por prenda
+# Se puede observar que hay 7000 imágenes por prenda
 
-#%%
-"""
-Teniendo en cuenta la cantidad de prendas totales por clase, y la cantidad total de prendas en sí,
-consideramos recortar la información de los gráficos para mejor visualización. 
-Los gráficos serán una representación útil para ejemplificar en el informe, pero no una herramienta que demuestre 
-alguna comparación, diferencia o igualdad de prendas o clases.
-"""
-
-# Imágenes promedio por clase
+#%% Imágenes promedio por clase
 plt.figure(figsize=(15, 8))
 for i in range(10):
     plt.subplot(2, 5, i+1)
@@ -158,14 +163,14 @@ plt.subplot(1, 3, 1)
 label0 = (Y == 0)
 img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
 plt.imshow(img0, cmap='bwr')
-plt.axis('off')
+
 
 
 plt.subplot(1, 3, 3)
 label8 = (Y == 8)
 img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
 plt.imshow(img8, cmap='bwr')
-plt.axis('off')
+
 
 
 plt.subplot(1,3,2)
@@ -173,10 +178,10 @@ remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :78
 bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
 diferencia = (remeras - bolsos).values.reshape(28, 28)
 plt.imshow(diferencia, cmap='bwr')
-plt.axis('off')
+
 
 # espacio entre imágenes
-plt.subplots_adjust(wspace=0.02)  
+plt.subplots_adjust(wspace=0.12)  
 plt.show()
 #%%
 subconjunto_0_8_TRAIN = pd.concat([df_0, df_8]).sample(frac=1, random_state=1)  # barajamos
