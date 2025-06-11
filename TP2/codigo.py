@@ -152,7 +152,33 @@ df_8 = dd.sql("""
     WHERE label = 8
     LIMIT 5950
 """).df()
+#%% gráfico que puse en el informe recién que compara los 2 promedios + la dif  
+plt.figure(figsize=(15, 5))    
+plt.subplot(1, 3, 1)
+label0 = (Y == 0)
+img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img0, cmap='bwr')
+plt.axis('off')
 
+
+plt.subplot(1, 3, 3)
+label8 = (Y == 8)
+img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img8, cmap='bwr')
+plt.axis('off')
+
+
+plt.subplot(1,3,2)
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+diferencia = (remeras - bolsos).values.reshape(28, 28)
+plt.imshow(diferencia, cmap='bwr')
+plt.axis('off')
+
+# espacio entre imágenes
+plt.subplots_adjust(wspace=0.02)  
+plt.show()
+#%%
 subconjunto_0_8_TRAIN = pd.concat([df_0, df_8]).sample(frac=1, random_state=1)  # barajamos
 # df y train tienen las mismas columnas
 diferencia = subconjunto_0_8.merge(subconjunto_0_8_TRAIN, how='outer', indicator=True)
