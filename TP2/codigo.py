@@ -14,19 +14,24 @@ ruta_moda = os.path.join(carpetaOriginal, "Fashion-MNIST.csv", )
 fashion = pd.read_csv(ruta_moda, index_col=0)
 #%%
 # Separamos los datos en dos subconjuntos
-# X para las imagenes, esto es, los valores de sus pixeles
-# Y para las etiquetas, (el tipo de prenda al cual pertenece)
+# X para las imágenes, esto es, los valores de sus píxeles
+# Y para las etiquetas, el tipo de prenda al cual pertenece, que es lo que denominaremos como "clase"
 X = fashion.drop('label', axis=1)
 Y = fashion['label']
 
 #%%
-# Contamos con estas 10 prendas, viendo el github del Fashion MNIST podemos observar a que numero pertenece
-# cada prenda, 0 es Remera, 1 es Pantalon y asi hasta 9 que es Ankle Boot (Botita)
+# Contamos con estas 10 prendas que, con ayuda del github del Fashion-MNIST podemos observar a qué número pertenece
+# cada prenda, 0 es Remera, 1 es Pantalon y así hasta 9 que es Ankle Boot (Botita)
 clases = [
     'Remera', 'Pantalón', 'Suéter', 'Vestido', 'Abrigo',
     'Sandalia', 'Camisa', 'Zapatilla', 'Bolso', 'Botita'
 ]
 
+# obs: veamos que hay una misma cantidad de prendas por clase (operación que demuestra lo visto en el gráfico anterior)
+cantidadPrendasPorClase = fashion['label'].value_counts() 
+print(cantidadPrendasPorClase)
+
+# Gráfico que visualiza esta comparación 
 plt.figure(figsize=(12, 6))
 unique, counts = np.unique(Y, return_counts=True)
 plt.bar([clases[i] for i in unique], counts)
@@ -36,12 +41,14 @@ plt.ylabel("Cantidad")
 plt.show()
 # Se puede observar que hay 7000 imagenes por prenda
 
-# obs: veamos que hay una misma cantidad de prendas por clase (operación que demuestra lo visto en el gráfico anterior)
-cantidadPrendasPorClase = fashion['label'].value_counts() 
-print(cantidadPrendasPorClase)
-
-
 #%%
+"""
+Teniendo en cuenta la cantidad de prendas totales por clase, y la cantidad total de prendas en sí,
+consideramos recortar la información de los gráficos para mejor visualización. 
+Los gráficos serán una representación útil para ejemplificar en el informe, pero no una herramienta que demuestre 
+alguna comparación, diferencia o igualdad de prendas o clases.
+"""
+
 # Imágenes promedio por clase
 plt.figure(figsize=(15, 8))
 for i in range(10):
@@ -53,12 +60,12 @@ for i in range(10):
         plt.title(clases[i], fontsize=20) 
         plt.axis('off')
 
-# espacio entre imágenes
 plt.subplots_adjust(wspace=0.08, hspace=0.08)  
 
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 plt.show()
 #%%
+
 # Análisis de variabilidad clase 0
 plt.figure(figsize=(15, 15))
 bolsos = X[Y == 0].sample(100)  # buscamos 100 remeras aleatorias
@@ -73,8 +80,6 @@ plt.suptitle('Algunos Ejemplos de Clase 0', fontsize=25)
 plt.tight_layout()
 plt.show()
 
-print("nota: este gráfico muestra 100 ejemplos de remeras aleatorias dentro de la clase, no es una representación total de la misma")
-#%%
 # Análisis de variabilidad clase 8
 plt.figure(figsize=(15, 15))
 bolsos = X[Y == 8].sample(100)  # buscamos 100 bolsos aleatorios
@@ -89,7 +94,6 @@ plt.suptitle('Algunos Ejemplos de Clase 8', fontsize=25)
 plt.tight_layout()
 plt.show()
 
-print("nota: este gráfico muestra 100 ejemplos de bolsos aleatorios dentro de la clase, no es una representación total de la misma")
 #%%
 # Función para visualizar una comparación entre dos clases
 def compararClases(label1, label2, title):
@@ -121,9 +125,10 @@ compararClases(2, 6, "Comparación entre Sueter y Camisa")
 # Figura clasificación binaria
 compararClases(0, 8, "Comparación entre Remera y Bolso")
 
-print("nota: estos gráficos comparan 5 prendas aleatorias entre dos clases, entendemos que existe un recorte de información")
-
-#%% CLASIFICACIÓN BINARIA: ¿La imagen corresponde a la clase 0 o a la clase 8? 
+#%% ===============================================================================================
+# CLASIFICACIÓN BINARIA
+# ¿La imagen corresponde a la clase 0 o a la clase 8? 
+# =================================================================================================
 
 # A partir del dataframe original, construimos uno nuevo que contenga sólo al subconjunto de imágenes que corresponden a la clase 0 y clase 8
 
@@ -173,7 +178,7 @@ coordenadas_azules = [divmod(idx, 28) for idx in indices_mas_azules] #para la cu
 indices_mas_rojos = indices_ordenados[-2:] #los últimos dos corresponden a los dos más rojos
 coordenadas_rojos = [divmod(idx, 28) for idx in indices_mas_rojos]
 
-# Convertir coordenadas a enteros normales
+# Convertir coordenadas a números enteros
 coordenadas_azules = [(int(x), int(y)) for x, y in coordenadas_azules]
 coordenadas_rojos = [(int(x), int(y)) for x, y in coordenadas_rojos]
 
@@ -215,7 +220,7 @@ resultados = []
 y_train = subconjunto_0_8_TRAIN["label"].values
 y_test = subconjunto_0_8_TEST["label"].values
 
-# Evaluación
+# Entonces evaluamos
 for nombre, atributos in combinaciones.items():
     X_train = subconjunto_0_8_TRAIN.iloc[:, atributos].values
     X_test = subconjunto_0_8_TEST.iloc[:, atributos].values
@@ -236,16 +241,14 @@ for nombre, atributos in combinaciones.items():
 df_resultados = pd.DataFrame(resultados)
 print(df_resultados.sort_values(by="accuracy", ascending=False))
 # Guiándonos por la exactitud, el mejor modelo de estas combinaciones sería el que toma los 4 píxeles de atributo y un k=100
+
 #%%
+# Entre los experimentos planteados, presentamos uno que nos ha devuelto una menor exactitud. 
+# El mismo será el siguiente: 
 
-
-
-## VEAMOS SI QUEREMOS DEJAR ESTO PQ TIENE MENOS EXACTITUD XDDD
-
-
-# Pensamos que podría estar bueno utilizar como atributo ciertos cálculos con los píxeles, más que usarlos individualmente 
+# Utilizamos como atributo ciertos cálculos con los píxeles, en lugar de individualmente 
 # Por ejemplo, definimos una función que nos ayude a identificar si hay una correa de bolso en la parte superior viendo el promedio 
-# de píxeles en la parte superior.
+# de píxeles en la parte superior
 # También notamos que los bolsos suelen ser más anchos que las remeras, así que buscamos el ancho máximo de píxeles en la imagen
 # Pixeles (columnas 0 a 783)
 X_train_pixels = subconjunto_0_8_TRAIN.iloc[:, 0:784].values
@@ -266,7 +269,7 @@ def calcular_ancho_maximo(imagen_flat):
     anchos = [np.count_nonzero(fila) for fila in imagen]
     return max(anchos)
 
-# Aplicar la función a cada imagen
+# Aplicamos la función a cada imagen
 # Para TRAIN
 X_train_feat_correa = np.array([calcular_promedio_superior(x) for x in X_train_pixels])
 X_train_feat_ancho = np.array([calcular_ancho_maximo(x) for x in X_train_pixels])
@@ -284,11 +287,13 @@ y_pred = clasificador.predict(X_test_feat)
 
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Exactitud del modelo con 2 atributos (correa + ancho): {accuracy:.4f}")
-#%%
 
-#%% CLASIFICACIÓN MULTICLASE: ¿A cuál de las 10 clases corresponde la imagen?
+#%% ===============================================================================================
+# CLASIFICACIÓN MULTICLASE
+# ¿A cuál de las 10 clases corresponde la imagen? 
+# =================================================================================================
 
-# paso 1: separamos los datos en desarrollo dev (80%) y validación heldout (20%)
+# Separamos los datos en desarrollo dev (80%) y validación heldout (20%)
 X_dev, X_heldout, Y_dev, Y_heldout = train_test_split(
     X, Y,
     test_size=0.2,          
@@ -297,7 +302,7 @@ X_dev, X_heldout, Y_dev, Y_heldout = train_test_split(
 )
 
 
-#%% paso 2: ajustamos un modelo de árbol de decisión y lo entrenamos con distintas profundidades del 1 al 10
+#%% Ajustamos un modelo de árbol de decisión y lo entrenamos con distintas profundidades del 1 al 10
 train_scores = []
 test_scores = []
 
@@ -326,7 +331,7 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-#%% paso 3: búsqueda de hiperparámetros con validación cruzada
+#%% Búsqueda de hiperparámetros con validación cruzada
 param_grid = {
     'max_depth': [5, 7, 9, 11, 13],      # Rangos optimizados, OJO ERA HASTA 10 DE PROFUNDIDAD
     'min_samples_split': [5, 10, 20],
@@ -361,7 +366,7 @@ y_pred = best_tree.predict(X_heldout)
 heldout_acc = accuracy_score(Y_heldout, y_pred)
 print(f"\nAccuracy en conjunto held-out: {heldout_acc:.4f}")
 
-# Matriz de confusión
+#%% Matriz de confusión
 cm = confusion_matrix(Y_heldout, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=clases)
 
@@ -395,7 +400,7 @@ print("\nPrincipales confusiones:")
 for i, j, rate in max_errors[:10]:
     print(f"{clases[i]} → {clases[j]}: {rate:.2%}")
 
-#%% EXTRAS:
+#%% EXTRAS: 
 # 1. código del gráfico que utilizamos en el informe para comparar una fracción de prendas de una clase 
 plt.figure(figsize=(15, 15))
 bolsos = X[Y == 5].sample(20)  
