@@ -42,7 +42,7 @@ print(cantidadPrendasPorClase)
 
 
 #%%
-# 2. Imágenes promedio por clase
+# Imágenes promedio por clase
 plt.figure(figsize=(15, 8))
 for i in range(10):
     plt.subplot(2, 5, i+1)
