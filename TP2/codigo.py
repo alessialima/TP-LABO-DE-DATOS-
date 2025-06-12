@@ -73,24 +73,20 @@ plt.subplots_adjust(wspace=0.08, hspace=0.08)
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 plt.show()
 #%% Desviación: 
-def desviacion_imagen(clase):
-    imagenes_digito = fashion[fashion["label"] == clase].iloc[:, :-1]
+plt.subplot(1,2,figsize=(10,5))
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].std()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].std()
+diferencia = (remeras - bolsos).values.reshape(28, 28)
+plt.imshow(diferencia, cmap='bwr')
 
-    imagen_desviacion = np.array(imagenes_digito.std(axis=0)).reshape((28, 28))
-    return imagen_desviacion
+plt.subplot(1,2,figsize=(10,5))
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+diferencia = (remeras - bolsos).values.reshape(28, 28)
+plt.imshow(diferencia, cmap='bwr')
 
-def promedio_imagen(clase): 
-    imagenes_digito = fashion[fashion["label"] == clase].iloc[:, :-1]
-
-    imagen_promedio = np.array(imagenes_digito.mean(axis=0)).reshape((28, 28))
-    return imagen_promedio
-    
-fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-img = promedio_imagen(6)
-img2 = desviacion_imagen(6)
-ax[0].imshow(img, cmap='bwr')
-ax[1].imshow(img2, cmap='bwr')
-plt.show() 
+plt.subplots_adjust(wspace=0.12)  
+plt.show()
 
 # Promedio de píxeles por clase
 sueter = fashion[fashion["label"] == 2].iloc[:, :784].mean()
