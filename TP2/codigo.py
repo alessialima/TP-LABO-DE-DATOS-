@@ -73,22 +73,6 @@ plt.subplots_adjust(wspace=0.08, hspace=0.08)
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 plt.show()
 
-#%% Desviación VS Promedio
-plt.subplot(1,2,1)
-remeras_mean = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].std()
-bolsos_mean = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].std()
-diferencia = (remeras_mean - bolsos_mean).values.reshape(28, 28)
-plt.imshow(diferencia, cmap='bwr')
-
-plt.subplot(1,2,2)
-remeras_std = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
-bolsos_std = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
-desviacion = (remeras_std - bolsos_std).values.reshape(28, 28)
-plt.imshow(desviacion, cmap='bwr')
-
-plt.subplots_adjust(wspace=0.14)  
-plt.show()
-
 #%% Diferencia Promedio por Clases 
 # Promedio de píxeles por clase
 sueter = fashion[fashion["label"] == 2].iloc[:, :784].mean()
@@ -136,6 +120,21 @@ subconjunto_0_8_TRAIN = pd.concat([df_0, df_8]).sample(frac=1, random_state=1)  
 # df y train tienen las mismas columnas
 diferencia = subconjunto_0_8.merge(subconjunto_0_8_TRAIN, how='outer', indicator=True)
 subconjunto_0_8_TEST = diferencia[diferencia['_merge'] == 'left_only'].drop(columns=['_merge'])
+#%% Desviación VS Promedio
+plt.subplot(1,2,1)
+remeras_mean = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].std()
+bolsos_mean = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].std()
+diferencia = (remeras_mean - bolsos_mean).values.reshape(28, 28)
+plt.imshow(diferencia, cmap='bwr')
+
+plt.subplot(1,2,2)
+remeras_std = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos_std = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+desviacion = (remeras_std - bolsos_std).values.reshape(28, 28)
+plt.imshow(desviacion, cmap='bwr')
+
+plt.subplots_adjust(wspace=0.14)  
+plt.show()
 #%% KNN
 # Promedio de píxeles por clase
 remeras_promedio = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
@@ -265,7 +264,7 @@ print(f"Accuracy: {accuracy:.3f}")
 y_pred = modelo.predict(X_test) 
 
 cmKNN = confusion_matrix(y_test, y_pred) 
-dispKNN = ConfusionMatrizDisplay(confusion_matrix = cmKNN, display_labels = [0,8])
+dispKNN = ConfusionMatrixDisplay(confusion_matrix = cmKNN, display_labels = [0,8])
 
 plt.figure(figsize=(12,10)) 
 dispKNN.plot(cmap='Blues', values_format='d', colorbar = False) 
