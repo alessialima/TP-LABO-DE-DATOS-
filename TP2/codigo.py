@@ -79,29 +79,6 @@ plt.show()
 # ¿La imagen corresponde a la clase 0 o a la clase 8? 
 # =================================================================================================
 
-#%% Gráfico que visualiza la comparación entre los promedios de ambas clases
-# además de mostrar en los extremos el promedio de cada clase en sí
-plt.figure(figsize=(15, 5))    
-plt.subplot(1, 3, 1)
-label0 = (Y == 0)
-img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img0, cmap='bwr')
-
-plt.subplot(1, 3, 3)
-label8 = (Y == 8)
-img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img8, cmap='bwr')
-
-plt.subplot(1,3,2)
-remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
-bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
-diferencia = (remeras - bolsos).values.reshape(28, 28)
-plt.imshow(diferencia, cmap='bwr')
-
-# espacio entre imágenes
-plt.subplots_adjust(wspace=0.12)  
-plt.show()
-
 #%% A partir del dataframe original, construimos uno nuevo que contenga sólo al subconjunto de imágenes que corresponden a la clase 0 y clase 8
 
 # subconjunto clases 0 y 8
@@ -158,6 +135,29 @@ coordenadas_rojos = [(int(x), int(y)) for x, y in coordenadas_rojos]
 print("Pixeles más azules:", coordenadas_azules)
 print("Pixeles más rojos:", coordenadas_rojos)
 
+#%% Gráfico que visualiza la comparación entre los promedios de ambas clases
+# además de mostrar en los extremos el promedio de cada clase en sí
+plt.figure(figsize=(15, 5))    
+plt.subplot(1, 3, 1)
+label0 = (Y == 0)
+img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img0, cmap='bwr')
+
+plt.subplot(1, 3, 3)
+label8 = (Y == 8)
+img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img8, cmap='bwr')
+
+plt.subplot(1,3,2)
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+diferencia = (remeras - bolsos).values.reshape(28, 28)
+plt.imshow(diferencia, cmap='bwr')
+
+plt.subplots_adjust(wspace=0.12)  
+plt.show()
+
+#%% Gráfico que visualiza sólo la diferencia de promedios de clase 
 plt.imshow(diferencia, cmap='bwr', vmin=-150, vmax=150)
 plt.colorbar()
 plt.title("Diferencia promedio (remera - bolso)")
@@ -169,7 +169,7 @@ plt.tight_layout()
 plt.show()
 
 #%%
-# Gracias al gráfico previo podemos ver más fácilmente los atributos que diferencian estas dos clases
+# Gracias al gráfico previo podemos notara simple vista los atributos que diferencian estas dos clases
 # Para facilitar el proceso creamos una función que nos devuelva el índice del píxel según la coordenada deseada
 def coordenada_a_indice(fila, columna):
     return fila * 28 + columna
@@ -215,7 +215,6 @@ df_resultados = pd.DataFrame(resultados)
 print(df_resultados.sort_values(by="accuracy", ascending=False))
 # Guiándonos por la exactitud, el mejor modelo de estas combinaciones sería el que toma los 4 píxeles de atributo y un k=100
 #%% Matriz de Confusión (chequear pq no se si esta bien)
-
 y_pred = modelo.predict(X_test)
 
 cmKNN = confusion_matrix(y_test,y_pred)
