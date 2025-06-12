@@ -19,7 +19,9 @@ fashion = pd.read_csv(ruta_moda, index_col=0)
 X = fashion.drop('label', axis=1)
 Y = fashion['label']
 
-#%%
+#%% ===============================================================================================
+# EXPLORACIÓN DE DATOS 
+# =================================================================================================
 """
 Contamos con 10 prendas que, con ayuda del github de Fashion-MNIST, 
 podemos observar a qué número de clase pertenece cada tipo de prenda:
@@ -40,11 +42,11 @@ clases = [
     'Sandalia', 'Camisa', 'Zapatilla', 'Bolso', 'Botita'
 ]
 
-# obs: veamos que hay una misma cantidad de prendas por clase 
+# Veamos que hay una misma cantidad de prendas por clase 
 cantidadPrendasPorClase = fashion['label'].value_counts() 
 print(cantidadPrendasPorClase)
 
-# Gráfico que visualiza esta comparación 
+# Gráfico que visualiza la comparación de prendas por clase: 
 plt.figure(figsize=(12, 6))
 unique, counts = np.unique(Y, return_counts=True)
 plt.bar([clases[i] for i in unique], counts)
@@ -52,7 +54,7 @@ plt.title("Cantidad Imagenes por Clase de Fashion MNIST")
 plt.xlabel("Prendas de Ropa")
 plt.ylabel("Cantidad")
 plt.show()
-# Se puede observar que hay 7000 imágenes por prenda
+# obs: se puede observar que hay 7000 imágenes por prenda
 
 #%% Imágenes promedio por clase
 plt.figure(figsize=(15, 8))
@@ -69,81 +71,46 @@ plt.subplots_adjust(wspace=0.08, hspace=0.08)
 
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 plt.show()
-#%%
 
-# Análisis de variabilidad clase 0
-plt.figure(figsize=(15, 15))
-bolsos = X[Y == 0].sample(100)  # buscamos 100 remeras aleatorias
-
-for i in range(100):
-    plt.subplot(10, 10, i+1)
-    img = bolsos.iloc[i].values.reshape(28, 28)
-    plt.imshow(img, cmap='bwr')
-    plt.axis('off')
-    
-plt.suptitle('Algunos Ejemplos de Clase 0', fontsize=25)
-plt.tight_layout()
-plt.show()
-
-# Análisis de variabilidad clase 8
-plt.figure(figsize=(15, 15))
-bolsos = X[Y == 8].sample(100)  # buscamos 100 bolsos aleatorios
-
-for i in range(100):
-    plt.subplot(10, 10, i+1)
-    img = bolsos.iloc[i].values.reshape(28, 28)
-    plt.imshow(img, cmap='bwr')
-    plt.axis('off')
-    
-plt.suptitle('Algunos Ejemplos de Clase 8', fontsize=25)
-plt.tight_layout()
-plt.show()
-
-#%%
-# Función para visualizar una comparación entre dos clases
-def compararClases(label1, label2, title):
-    clase1 = X[Y == label1].sample(5)
-    clase2 = X[Y == label2].sample(5)
-    fig, axes = plt.subplots(2, 5, figsize=(10, 3))
-    fig.suptitle(title, fontsize=16, y=1.05)
-    
-    # Usamos dos for in range para obtener imágenes de las dos distintas clases
-    for i in range(5):
-        img = clase1.iloc[i].values.reshape(28, 28)
-        axes[0, i].imshow(img, cmap='bwr')
-        axes[0, i].axis('off')
-    for i in range(5):
-        img = clase2.iloc[i].values.reshape(28, 28)
-        axes[1, i].imshow(img, cmap='bwr')
-        axes[1, i].axis('off')
-    
-    
-    plt.subplots_adjust(wspace=0.05, hspace=0.05)  
-    plt.show()
-
-# Figurar 1 de ejercicio 1.b
-compararClases(2, 1, "Comparación entre Sueter y Pantalón")
-
-# Figura 2 de ejercicio 1.b
-compararClases(2, 6, "Comparación entre Sueter y Camisa")
-
-# Figura clasificación binaria
-compararClases(0, 8, "Comparación entre Remera y Bolso")
+# HOLA KATE: el código que usaste para comparar los promedios del pantalon + sueter y sueter + camisa ponelo aca !!
 
 #%% ===============================================================================================
 # CLASIFICACIÓN BINARIA
 # ¿La imagen corresponde a la clase 0 o a la clase 8? 
 # =================================================================================================
 
-# A partir del dataframe original, construimos uno nuevo que contenga sólo al subconjunto de imágenes que corresponden a la clase 0 y clase 8
+#%% Gráfico que visualiza la comparación entre los promedios de ambas clases
+# además de mostrar en los extremos el promedio de cada clase en sí
+plt.figure(figsize=(15, 5))    
+plt.subplot(1, 3, 1)
+label0 = (Y == 0)
+img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img0, cmap='bwr')
+
+plt.subplot(1, 3, 3)
+label8 = (Y == 8)
+img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img8, cmap='bwr')
+
+plt.subplot(1,3,2)
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+diferencia = (remeras - bolsos).values.reshape(28, 28)
+plt.imshow(diferencia, cmap='bwr')
+
+# espacio entre imágenes
+plt.subplots_adjust(wspace=0.12)  
+plt.show()
+
+#%% A partir del dataframe original, construimos uno nuevo que contenga sólo al subconjunto de imágenes que corresponden a la clase 0 y clase 8
 
 # subconjunto clases 0 y 8
 subconjunto_0_8 = dd.sql("""SELECT *
                 FROM fashion
                 WHERE label = 0 OR label = 8;""").df()
 # este subconjunto está balanceado, se tienen 7000 muestras de cada clase (según lo analizado en el punto 1)
-# siguiendo la lógica vista, separamos el 85% para train y el restante 15% para test
 
+# Separamos el 85% para train y el restante 15% para test
 df_0 = dd.sql("""
     SELECT *
     FROM subconjunto_0_8
@@ -157,33 +124,8 @@ df_8 = dd.sql("""
     WHERE label = 8
     LIMIT 5950
 """).df()
-#%% gráfico que puse en el informe recién que compara los 2 promedios + la dif  
-plt.figure(figsize=(15, 5))    
-plt.subplot(1, 3, 1)
-label0 = (Y == 0)
-img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img0, cmap='bwr')
 
-
-
-plt.subplot(1, 3, 3)
-label8 = (Y == 8)
-img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img8, cmap='bwr')
-
-
-
-plt.subplot(1,3,2)
-remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
-bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
-diferencia = (remeras - bolsos).values.reshape(28, 28)
-plt.imshow(diferencia, cmap='bwr')
-
-
-# espacio entre imágenes
-plt.subplots_adjust(wspace=0.12)  
-plt.show()
-#%%
+#%% 
 subconjunto_0_8_TRAIN = pd.concat([df_0, df_8]).sample(frac=1, random_state=1)  # barajamos
 # df y train tienen las mismas columnas
 diferencia = subconjunto_0_8.merge(subconjunto_0_8_TRAIN, how='outer', indicator=True)
@@ -446,7 +388,7 @@ for i, j, rate in max_errors[:10]:
     print(f"{clases[i]} → {clases[j]}: {rate:.2%}")
 
 #%% EXTRAS: 
-# 1. código del gráfico que utilizamos en el informe para comparar una fracción de prendas de una clase 
+# 1. código del gráfico que compara una fracción de prendas de una clase 
 plt.figure(figsize=(15, 15))
 bolsos = X[Y == 5].sample(20)  
 
@@ -460,3 +402,31 @@ plt.suptitle('Algunos Ejemplos de Clase 5', fontsize=25)
 plt.tight_layout()
 plt.show()
 
+#2. Análisis de variabilidad (visualizamos una fracción de lo que es la clase 0) 
+# Clase 0
+plt.figure(figsize=(15, 15))
+bolsos = X[Y == 0].sample(100)  # buscamos 100 remeras aleatorias
+
+for i in range(100):
+    plt.subplot(10, 10, i+1)
+    img = bolsos.iloc[i].values.reshape(28, 28)
+    plt.imshow(img, cmap='bwr')
+    plt.axis('off')
+    
+plt.suptitle('Algunos Ejemplos de Clase 0', fontsize=25)
+plt.tight_layout()
+plt.show()
+
+# Clase 8
+plt.figure(figsize=(15, 15))
+bolsos = X[Y == 8].sample(100)  # buscamos 100 bolsos aleatorios
+
+for i in range(100):
+    plt.subplot(10, 10, i+1)
+    img = bolsos.iloc[i].values.reshape(28, 28)
+    plt.imshow(img, cmap='bwr')
+    plt.axis('off')
+    
+plt.suptitle('Algunos Ejemplos de Clase 8', fontsize=25)
+plt.tight_layout()
+plt.show()
