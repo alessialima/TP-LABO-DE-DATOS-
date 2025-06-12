@@ -246,19 +246,34 @@ for nombre, atributos in combinaciones.items():
 df_resultados = pd.DataFrame(resultados)
 print(df_resultados.sort_values(by="accuracy", ascending=False))
 # Guiándonos por la exactitud, el mejor modelo de estas combinaciones sería el que toma los 4 píxeles de atributo y un k=5
-#%% Matriz de Confusión (chequear pq no se si esta bien)
-y_pred = modelo.predict(X_test)
 
-cmKNN = confusion_matrix(y_test,y_pred)
-dispKNN = ConfusionMatrixDisplay(confusion_matrix=cmKNN, display_labels=[0,8])
+#%% Matriz de Confusión 
+pixeles_seleccionados = [p1,p2,p3,p4]
+k = 5 
+X_train = subconjunto_0_8_TRAIN.iloc[:, pixeles_seleccionados].values()
+X_test = subconjunto_0_8_TEST.iloc[:, pixeles_seleccionados].values()
 
-plt.figure(figsize=(12, 10))
-dispKNN.plot(cmap='viridis', values_format='d')
+modelo = KNeighborsClassifier(n_neighbors = k) 
+modelo.fit(X_train, y_train) 
+y_pred = modelo.predict(X_test) 
 
-dispKNN.ax_.set_xlabel("Predicted", fontsize=12)
-dispKNN.ax_.set_ylabel("Actual", fontsize=12)
+# Calculo Exactitud 
+accuracy = accuracy_score(y_test, y_pred) 
+print(f"Accuracy: {accuracy:.3f}") 
 
-plt.tight_layout()
+# matriz 
+y_pred = modelo.predict(X_test) 
+
+cmKNN = confusion_matrix(y_test, y_pred) 
+dispKNN = ConfusionMatrizDisplay(confusion_matrix = cmKNN, display_labels = [0,8])
+
+plt.figure(figsize=(12,10)) 
+dispKNN.plot(cmap='Blues', values_format='d', colorbar = False) 
+
+dispKNN.ax_.set_xlabel("Predicted", fontisize = 12) 
+dispKNN.ax_.set_ylabel("Actual", fontsize = 12) 
+
+plt.thight_layout()
 plt.show()
 #%% ===============================================================================================
 # CLASIFICACIÓN MULTICLASE
