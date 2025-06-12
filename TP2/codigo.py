@@ -72,20 +72,20 @@ plt.subplots_adjust(wspace=0.08, hspace=0.08)
 
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 plt.show()
-#%% Desviación: 
-plt.subplot(1,2,figsize=(10,5))
-remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].std()
-bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].std()
-diferencia = (remeras - bolsos).values.reshape(28, 28)
+#%% Desviación VS Promedio
+plt.subplot(1,2,1)
+remeras_mean = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].std()
+bolsos_mean = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].std()
+diferencia = (remeras_mean - bolsos_mean).values.reshape(28, 28)
 plt.imshow(diferencia, cmap='bwr')
 
-plt.subplot(1,2,figsize=(10,5))
-remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
-bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
-diferencia = (remeras - bolsos).values.reshape(28, 28)
-plt.imshow(diferencia, cmap='bwr')
+plt.subplot(1,2,2)
+remeras_std = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos_std = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+desviacion = (remeras_std - bolsos_std).values.reshape(28, 28)
+plt.imshow(desviacion, cmap='bwr')
 
-plt.subplots_adjust(wspace=0.12)  
+plt.subplots_adjust(wspace=0.14)  
 plt.show()
 
 # Promedio de píxeles por clase
