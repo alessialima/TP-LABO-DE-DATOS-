@@ -73,6 +73,7 @@ plt.subplots_adjust(wspace=0.08, hspace=0.08)
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 plt.show()
 
+
 #%% Diferencia Promedio por Clases 
 # Promedio de píxeles por clase
 sueter = fashion[fashion["label"] == 2].iloc[:, :784].mean()
@@ -120,30 +121,12 @@ subconjunto_0_8_TRAIN = pd.concat([df_0, df_8]).sample(frac=1, random_state=1)  
 # df y train tienen las mismas columnas
 diferencia = subconjunto_0_8.merge(subconjunto_0_8_TRAIN, how='outer', indicator=True)
 subconjunto_0_8_TEST = diferencia[diferencia['_merge'] == 'left_only'].drop(columns=['_merge'])
-#%% Desviación VS Promedio
-plt.subplot(1,2,1)
-remeras_mean = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].std()
-bolsos_mean = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].std()
-diferencia = (remeras_mean - bolsos_mean).values.reshape(28, 28)
-plt.imshow(diferencia, cmap='bwr')
 
-plt.subplot(1,2,2)
-remeras_std = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
-bolsos_std = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
-desviacion = (remeras_std - bolsos_std).values.reshape(28, 28)
-plt.imshow(desviacion, cmap='bwr')
-
-plt.subplots_adjust(wspace=0.14)  
-plt.show()
-#%% KNN
+#%% SELECCIÓN DE ATRIBUTOS 
 # Promedio de píxeles por clase
 remeras_promedio = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
 bolsos_promedio = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
 
-#Desviación de píxeles por clase 
-remeras_desviacion = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].std()
-bolsos_desviacion = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].std()
-#%%
 # Diferencia promedio entre clases
 diferencia = (remeras_promedio - bolsos_promedio).values.reshape(28, 28)
 
@@ -166,50 +149,14 @@ coordenadas_rojos = [(int(x), int(y)) for x, y in coordenadas_rojos]
 print("Pixeles más azules:", coordenadas_azules)
 print("Pixeles más rojos:", coordenadas_rojos)
 
-#%% Gráfico que visualiza la comparación entre los promedios de ambas clases
-# además de mostrar en los extremos el promedio de cada clase en sí
-plt.figure(figsize=(15, 5))    
-plt.subplot(1, 3, 1)
-label0 = (Y == 0)
-img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img0, cmap='bwr')
-
-plt.subplot(1, 3, 3)
-label8 = (Y == 8)
-img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img8, cmap='bwr')
-
-plt.subplot(1,3,2)
-remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
-bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
-diferencia = (remeras - bolsos).values.reshape(28, 28)
-plt.imshow(diferencia, cmap='bwr')
-
-plt.subplots_adjust(wspace=0.12)  
-plt.show()
-
-#%% Gráfico que visualiza sólo la diferencia de promedios de clase 
-plt.imshow(diferencia, cmap='bwr', vmin=-150, vmax=150)
-plt.colorbar()
-plt.title("Diferencia promedio (remera - bolso)")
-ticks = np.arange(0, 28, 2)
-plt.xticks(ticks, ticks, rotation=45, fontsize=8)
-plt.yticks(ticks, ticks, fontsize=8)
-
-plt.tight_layout()
-plt.show()
-
-#%%
-# Gracias al gráfico podemos ver más fácilmente los atributos que diferencian estas dos clases
-# Para facilitar el proceso creamos una función que nos devuelva el índice del píxel según la coordenada deseada
-def coordenada_a_indice(fila, columna):
-    return fila * 28 + columna
-
+#%% 
 # Píxeles seleccionados más rojos y más azules
-p1 = coordenada_a_indice(19, 22)    
-p2 = coordenada_a_indice(18, 22)   
-p3 = coordenada_a_indice(2, 14)   
-p4 = coordenada_a_indice(1, 11)   
+p1 = indices_mas_azules[0] #554
+p2 = indices_mas_azules[1] #526
+  
+p3 = indices_mas_rojos[0] #70
+p4 = indices_mas_rojos[1] #39
+   
 combinaciones = {
     "Combo 1 (2 pixeles)": [p1, p3],
     "Combo 2 (3 pixeles)": [p1, p2, p3],
@@ -217,7 +164,7 @@ combinaciones = {
     "Combo 4 (4 pixeles)": [p1, p2, p3, p4],
 }
 
-valores_k = [1, 5, 15, 20]
+valores_k = [1, 5, 15, 100]
 resultados = []
 
 # Etiquetas
@@ -271,6 +218,39 @@ dispKNN.plot(cmap='Blues', values_format='d', colorbar = False)
 
 dispKNN.ax_.set_xlabel("Predicted", fontsize = 12) 
 dispKNN.ax_.set_ylabel("Actual", fontsize = 12) 
+
+plt.tight_layout()
+plt.show()
+
+#%% Gráfico que visualiza la comparación entre los promedios de ambas clases
+# además de mostrar en los extremos el promedio de cada clase en sí
+plt.figure(figsize=(15, 5))    
+plt.subplot(1, 3, 1)
+label0 = (Y == 0)
+img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img0, cmap='bwr')
+
+plt.subplot(1, 3, 3)
+label8 = (Y == 8)
+img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img8, cmap='bwr')
+
+plt.subplot(1,3,2)
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+diferencia = (remeras - bolsos).values.reshape(28, 28)
+plt.imshow(diferencia, cmap='bwr')
+
+plt.subplots_adjust(wspace=0.12)  
+plt.show()
+
+#%% Gráfico que visualiza sólo la diferencia de promedios de clase 
+plt.imshow(diferencia, cmap='bwr', vmin=-150, vmax=150)
+plt.colorbar()
+plt.title("Diferencia promedio (remera - bolso)")
+ticks = np.arange(0, 28, 2)
+plt.xticks(ticks, ticks, rotation=45, fontsize=8)
+plt.yticks(ticks, ticks, fontsize=8)
 
 plt.tight_layout()
 plt.show()
