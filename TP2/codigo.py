@@ -72,25 +72,25 @@ plt.subplots_adjust(wspace=0.08, hspace=0.08)
 
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 plt.show()
-#%%
-# ESTO LO SAQUE DEL TP DE FACU, HABRIA QUE VER SI LO EDITAMOS O QUE HACEMOS PARA Q NO SEA FULL CHOREO
-def desviacion_imagen(clase):#Este saca la desviacion (la que esta dada vuelta), del num q ingresemos
+#%% Desviación: 
+def desviacion_imagen(clase):
     imagenes_digito = fashion[fashion["label"] == clase].iloc[:, :-1]
 
     imagen_desviacion = np.array(imagenes_digito.std(axis=0)).reshape((28, 28))
     return imagen_desviacion
-# DE HECHO YA HICIMOS EL PROMEDIO EN OTRA PARTE DE OTRA FORMA ASI QUE ESTO LO PODEMOS EDITAR !!!
-def promedio_imagen(clase): #Este saca el promedio de las matrices del numero que le ingresemos
+
+def promedio_imagen(clase): 
     imagenes_digito = fashion[fashion["label"] == clase].iloc[:, :-1]
 
     imagen_promedio = np.array(imagenes_digito.mean(axis=0)).reshape((28, 28))
     return imagen_promedio
+    
 fig, ax = plt.subplots(1, 2, figsize=(10, 5))
 img = promedio_imagen(6)
 img2 = desviacion_imagen(6)
 ax[0].imshow(img, cmap='bwr')
 ax[1].imshow(img2, cmap='bwr')
-plt.show() #%%
+plt.show() 
 
 # Promedio de píxeles por clase
 sueter = fashion[fashion["label"] == 2].iloc[:, :784].mean()
@@ -157,11 +157,15 @@ diferencia = subconjunto_0_8.merge(subconjunto_0_8_TRAIN, how='outer', indicator
 subconjunto_0_8_TEST = diferencia[diferencia['_merge'] == 'left_only'].drop(columns=['_merge'])
 #%% KNN
 # Promedio de píxeles por clase
-remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
-bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+remeras_promedio = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos_promedio = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
 
+#Desviación de píxeles por clase 
+remeras_desviacion = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].std()
+bolsos_desviacion = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].std()
+#%%
 # Diferencia promedio entre clases
-diferencia = (remeras - bolsos).values.reshape(28, 28)
+diferencia = (remeras_promedio - bolsos_promedio).values.reshape(28, 28)
 
 # índices ordenados según el valor al que refieren de menor a mayor 
 flat = diferencia.flatten()
@@ -386,54 +390,3 @@ max_errors.sort(key=lambda x: x[2], reverse=True)
 print("\nPrincipales confusiones:")
 for i, j, rate in max_errors[:10]:
     print(f"{clases[i]} → {clases[j]}: {rate:.2%}")
-
-#%% EXTRAS: 
-#%% ESTO LO BORRAMOS?
-# 1. código del gráfico que compara una fracción de prendas de una clase 
-# En el informe hay una parte al inicio que muestra ejemplos de 3 clases . use esto para armar el grafiquito 
-plt.figure(figsize=(15, 15))
-bolsos = X[Y == 5].sample(20)  
-
-for i in range(20):
-    plt.subplot(10, 10, i+1)
-    img = bolsos.iloc[i].values.reshape(28, 28)
-    plt.imshow(img, cmap='bwr')
-    plt.axis('off')
-    
-plt.suptitle('Algunos Ejemplos de Clase 5', fontsize=25)
-plt.tight_layout()
-plt.show()
-#2. Análisis de variabilidad (visualizamos una fracción de lo que es la clase 0) 
-# Clase 0
-plt.figure(figsize=(15, 15))
-bolsos = X[Y == 0].sample(100)  # buscamos 100 remeras aleatorias
-
-for i in range(100):
-    plt.subplot(10, 10, i+1)
-    img = bolsos.iloc[i].values.reshape(28, 28)
-    plt.imshow(img, cmap='bwr')
-    plt.axis('off')
-    
-plt.suptitle('Algunos Ejemplos de Clase 0', fontsize=25)
-plt.tight_layout()
-plt.show()
-
-# Clase 8
-plt.figure(figsize=(15, 15))
-bolsos = X[Y == 8].sample(100)  # buscamos 100 bolsos aleatorios
-
-for i in range(100):
-    plt.subplot(10, 10, i+1)
-    img = bolsos.iloc[i].values.reshape(28, 28)
-    plt.imshow(img, cmap='bwr')
-    plt.axis('off')
-    
-plt.suptitle('Algunos Ejemplos de Clase 8', fontsize=25)
-plt.tight_layout()
-plt.show()
-#%% ESTO DESPUES LO SACAMOS NO?
-# Plot imagen
-img = np.array(X.iloc[12]).reshape((28,28))
-plt.imshow(img, cmap='bwr')
-plt.colorbar()
-plt.show()
