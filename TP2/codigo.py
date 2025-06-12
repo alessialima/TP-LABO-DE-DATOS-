@@ -72,6 +72,7 @@ plt.subplots_adjust(wspace=0.08, hspace=0.08)
 
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 plt.show()
+
 #%% Desviación VS Promedio
 plt.subplot(1,2,1)
 remeras_mean = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].std()
@@ -88,6 +89,7 @@ plt.imshow(desviacion, cmap='bwr')
 plt.subplots_adjust(wspace=0.14)  
 plt.show()
 
+#%% Diferencia Promedio por Clases 
 # Promedio de píxeles por clase
 sueter = fashion[fashion["label"] == 2].iloc[:, :784].mean()
 camisa = fashion[fashion["label"] == 6].iloc[:, :784].mean()
@@ -103,23 +105,6 @@ plt.yticks(ticks, ticks, fontsize=8)
 
 plt.tight_layout()
 plt.show()
-#%% 
-# Promedio de píxeles por clase
-sueter = fashion[fashion["label"] == 2].iloc[:, :784].mean()
-pantalon = fashion[fashion["label"] == 1].iloc[:, :784].mean()
-
-# Mostrar diferencia promedio entre clases
-diferencia = (sueter - pantalon).values.reshape(28, 28)
-plt.imshow(diferencia, cmap='bwr', vmin=-150, vmax=150)
-plt.colorbar()
-plt.title("Diferencia promedio (sueter - pantalon)")
-ticks = np.arange(0, 28, 2)
-plt.xticks(ticks, ticks, rotation=45, fontsize=8)
-plt.yticks(ticks, ticks, fontsize=8)
-
-plt.tight_layout()
-plt.show()
-
 #%% ===============================================================================================
 # CLASIFICACIÓN BINARIA
 # ¿La imagen corresponde a la clase 0 o a la clase 8? 
