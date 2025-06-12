@@ -249,8 +249,8 @@ print(df_resultados.sort_values(by="accuracy", ascending=False))
 #%% Matriz de Confusión 
 pixeles_seleccionados = [p1,p2,p3,p4]
 k = 5 
-X_train = subconjunto_0_8_TRAIN.iloc[:, pixeles_seleccionados].values()
-X_test = subconjunto_0_8_TEST.iloc[:, pixeles_seleccionados].values()
+X_train = subconjunto_0_8_TRAIN.iloc[:, pixeles_seleccionados].values
+X_test = subconjunto_0_8_TEST.iloc[:, pixeles_seleccionados].values
 
 modelo = KNeighborsClassifier(n_neighbors = k) 
 modelo.fit(X_train, y_train) 
@@ -269,10 +269,10 @@ dispKNN = ConfusionMatrixDisplay(confusion_matrix = cmKNN, display_labels = [0,8
 plt.figure(figsize=(12,10)) 
 dispKNN.plot(cmap='Blues', values_format='d', colorbar = False) 
 
-dispKNN.ax_.set_xlabel("Predicted", fontisize = 12) 
+dispKNN.ax_.set_xlabel("Predicted", fontsize = 12) 
 dispKNN.ax_.set_ylabel("Actual", fontsize = 12) 
 
-plt.thight_layout()
+plt.tight_layout()
 plt.show()
 #%% ===============================================================================================
 # CLASIFICACIÓN MULTICLASE
