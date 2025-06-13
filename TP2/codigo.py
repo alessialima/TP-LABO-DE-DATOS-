@@ -264,27 +264,51 @@ X_dev, X_heldout, Y_dev, Y_heldout = train_test_split(
     X, Y,
     test_size=0.2,          
     stratify=Y,
-    random_state=42
+    random_state=20
 )
 
+# Hago una segunda división, train y test dentro de dev 
+X_train, X_test, Y_train, Y_test = train_test_split(
+    X_dev, Y_dev,
+    test_size = 0.25, # 20% del total 
+    stratify=Y_dev,
+    random_state=20
+    )
 
 #%% Ajustamos un modelo de arbol de decisión y lo entrenamos con distintas profundidades del 1 al 10
+
 train_scores = []
 test_scores = []
 
-for profundidad in range(1, 11):
-    tree = DecisionTreeClassifier(
-        max_depth= profundidad,
-        random_state=42
-    )
-    tree.fit(X_dev, Y_dev)
-    
-    train_acc = tree.score(X_dev, Y_dev)
-    test_acc = tree.score(X_heldout, Y_heldout)
-    
-    train_scores.append(train_acc)
-    test_scores.append(test_acc)
 
+def resultado() -> dict():
+    res = {}
+    
+
+    for profundidad in range(1, 11):
+     tree = DecisionTreeClassifier(
+        max_depth = profundidad,
+        random_state=42
+     )
+     tree.fit(X_train, Y_train)
+    
+     y_predict = tree.predict(X_test)
+     score = accuracy_score(Y_test, y_predict)
+    
+     res[profundidad] = score
+     print(f'Profundidad: {profundidad}, Exactitud: {score:.4f}') # print para observar el avance
+     
+     train_acc = tree.score(X_dev, Y_dev)
+     test_acc = tree.score(X_heldout, Y_heldout)
+
+     train_scores.append(train_acc)
+     test_scores.append(test_acc)
+   
+    return res
+
+resultados = resultado()
+
+#%% Gráfico Rendimiento vs Profundidad del Árbol
 
 plt.figure(figsize=(10, 6))
 plt.plot(range(1, 11), train_scores, 'o-', label='Train')
@@ -299,7 +323,7 @@ plt.show()
 
 #%% Búsqueda de hiperparámetros con validación cruzada
 param_grid = {
-    'max_depth': [5, 7, 9, 11, 13],      # Rangos optimizados, OJO ERA HASTA 10 DE PROFUNDIDAD
+    'max_depth': [10],      # Rangos optimizados, OJO ERA HASTA 10 DE PROFUNDIDAD
     'min_samples_split': [5, 10, 20],
     'min_samples_leaf': [2, 4, 8],
     'max_features': ['sqrt', None]        # Reducción para eficiencia
@@ -332,14 +356,13 @@ y_pred = best_tree.predict(X_heldout)
 heldout_acc = accuracy_score(Y_heldout, y_pred)
 print(f"\nAccuracy en conjunto held-out: {heldout_acc:.4f}")
 
-# Matriz de confusión
+#%% Matriz de confusión
 cm = confusion_matrix(Y_heldout, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=clases)
 
 plt.figure(figsize=(12, 10))
 disp.plot(cmap='Blues', values_format='d', xticks_rotation=45)
 
-# Ajuste: reducir tamaño del texto en las celdas
 for text in disp.text_.ravel():
     text.set_fontsize(7)
 
@@ -351,14 +374,14 @@ plt.title('Matriz de Confusión (Conjunto Held-out)')
 plt.tight_layout()
 plt.show()
 
-# Análisis de errores
+#%% Análisis de errores
 error_rates = cm / cm.sum(axis=1)[:, np.newaxis]
 np.fill_diagonal(error_rates, 0)  # Eliminar aciertos
 
 max_errors = []
 for i in range(10):
     for j in range(10):
-        if i != j and error_rates[i, j] > 0.01:  # Filtrar errores significativos
+        if i != j and error_rates[i, j] > 0.01:  # Filtramos errores significativos
             max_errors.append((i, j, error_rates[i, j]))
 
 max_errors.sort(key=lambda x: x[2], reverse=True)
