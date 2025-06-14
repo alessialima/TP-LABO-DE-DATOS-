@@ -164,7 +164,7 @@ combinaciones = {
     "Combo 4 (4 pixeles)": [p1, p2, p3, p4],
 }
 
-valores_k = [1, 5, 15, 100]
+valores_k = [1, 5, 15, 20]
 resultados = []
 
 # Etiquetas
