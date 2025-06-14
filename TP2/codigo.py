@@ -393,3 +393,34 @@ max_errors.sort(key=lambda x: x[2], reverse=True)
 print("\nPrincipales confusiones:")
 for i, j, rate in max_errors[:10]:
     print(f"{clases[i]} → {clases[j]}: {rate:.2%}")
+
+#%% Calculamos presición y recall por clase 
+
+y_pred = best_tree.predict(X_heldout)
+
+precisionScore = precision_score(Y_heldout, y_pred, average=None)
+recallScore = recall_score(Y_heldout, y_pred, average=None)
+
+#%% Gráfico que visualiza la precisión y recall por clase  
+
+clases = list(range(10))  # sabemos que van del 0 al 9
+grosor = 0.4
+
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.bar([c - grosor/2 for c in clases], precisionScore, grosor, label='Precisión', color='lightblue')
+ax.bar([c + grosor/2 for c in clases], recallScore, grosor, label='Recall', color='blue')
+
+ax.set_xlabel('Clases', fontsize = 19)
+ax.set_ylabel('Valor alcanzado', fontsize = 19)
+ax.set_title('Precisión y Recall por Clase', fontsize = 20, pad = 20)
+ax.set_xticks(clases)
+ax.set_xticklabels(clases, fontsize=14)
+ax.tick_params(axis='y', labelsize=14)
+ax.grid(axis='y', linestyle='--', alpha=0.8)
+ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
+
+plt.tight_layout()
+plt.show()
+
+
+
