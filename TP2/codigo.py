@@ -321,28 +321,19 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-
-
-#%% A PARTIR DE ACA HAY QUE TERMINAR DE RESOLVER CORREGIR, ETC 
-# elegir las profundidades 
-# correr el código y ver los resultados para ponerlo en el infomre 
-# ver nueva matriz de confusiòn con paleta de color magma a ver si queda mejor que blues (entonces combinaria con las matrices de 
-# la clasificacion binaria 
-
-
 #%% Búsqueda de hiperparámetros con validación cruzada 
 param_grid = {
-    'max_depth': [10],      # Rangos optimizados, OJO ERA HASTA 10 DE PROFUNDIDAD
+    'max_depth': [3, 5, 7, 10]
     'min_samples_split': [5, 10, 20],
     'min_samples_leaf': [2, 4, 8],
-    'max_features': ['sqrt', None]        # Reducción para eficiencia
+    'max_features': [None]        # Notamos que la exactitud aumenta cuando es None
 }
 
 tree = DecisionTreeClassifier(random_state=42)
 grid_search = GridSearchCV(
     estimator=tree,
     param_grid=param_grid,
-    cv=3,                   # 3-fold para mayor velocidad
+    cv=3,                  
     scoring='accuracy',
     n_jobs=-1,              # Paralelizar usando todos los núcleos
     verbose=1               # Mostrar progreso
@@ -355,6 +346,11 @@ best_params = grid_search.best_params_
 best_score = grid_search.best_score_
 print(f"\nMejores parámetros: {best_params}")
 print(f"Mejor accuracy en validación cruzada: {best_score:.4f}")
+"""
+Mejores parámetros: {'max_depth': 10, 'max_features': None, 'min_samples_leaf': 4, 'min_samples_split': 5}
+Mejor accuracy en validación cruzada: 0.8072
+Notamos que la exactitud no aumenta el 80,72% (los hice de a poco entonces en realidad hay que comprobar esto que digo je 
+"""
 
 #%% Evaluación final con conjunto held-out
 best_tree = DecisionTreeClassifier(**best_params, random_state=42)
