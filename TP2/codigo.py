@@ -15,7 +15,7 @@ fashion = pd.read_csv(ruta_moda, index_col=0)
 #%%
 # Separamos los datos en dos subconjuntos
 # X para las imagenes, esto es, los valores de sus pixeles
-# Y para las etiquetas, (el tipo de prenda al cual pertenece)
+# Y para las clases, (el tipo de prenda al cual pertenece)
 X = fashion.drop('label', axis=1)
 Y = fashion['label']
 
@@ -24,7 +24,7 @@ Y = fashion['label']
 # =================================================================================================
 """
 Contamos con 10 prendas que, con ayuda del github de Fashion-MNIST, 
-podemos observar a qué número de clase pertenece cada tipo de prenda:
+podemos observar a qué tipo de prenda pertenece cada número de clase. 
 0 = Remera
 1 = Pantalón
 2 = Suéter
@@ -134,15 +134,15 @@ diferencia = (remeras_promedio - bolsos_promedio).values.reshape(28, 28)
 flat = diferencia.flatten()
 indices_ordenados = np.argsort(flat)
 
-# 4 más azules (valores mínimos)
+# Más azules (valores mínimos)
 indices_mas_azules = indices_ordenados[:2] #quiero seleccionar los primeros 2 más azules
 coordenadas_azules = [divmod(idx, 28) for idx in indices_mas_azules] #para la cuenta recuerdo que hice la transformación, por eso el divmod
 
-# 4 más rojos (valores máximos)
+# Más rojos (valores máximos)
 indices_mas_rojos = indices_ordenados[-2:] #los últimos dos corresponden a los dos más rojos
 coordenadas_rojos = [divmod(idx, 28) for idx in indices_mas_rojos]
 
-# Convertir coordenadas a enteros normales
+# Convertir coordenadas a enteros
 coordenadas_azules = [(int(x), int(y)) for x, y in coordenadas_azules]
 coordenadas_rojos = [(int(x), int(y)) for x, y in coordenadas_rojos]
 
@@ -150,7 +150,7 @@ print("Pixeles más azules:", coordenadas_azules)
 print("Pixeles más rojos:", coordenadas_rojos)
 
 #%% 
-# Píxeles seleccionados más rojos y más azules
+# Atributos seleccionados serán los píxeles p1, p2, p3, p4
 p1 = indices_mas_azules[0] #554
 p2 = indices_mas_azules[1] #526
   
@@ -171,7 +171,7 @@ resultados = []
 y_train = subconjunto_0_8_TRAIN["label"].values
 y_test = subconjunto_0_8_TEST["label"].values
 
-# Evaluación
+# Evaluación 
 for nombre, atributos in combinaciones.items():
     X_train = subconjunto_0_8_TRAIN.iloc[:, atributos].values
     X_test = subconjunto_0_8_TEST.iloc[:, atributos].values
@@ -193,7 +193,7 @@ df_resultados = pd.DataFrame(resultados)
 print(df_resultados.sort_values(by="accuracy", ascending=False))
 # Guiándonos por la exactitud, el mejor modelo de estas combinaciones sería el que toma los 4 píxeles de atributo y un k=5
 
-#%% Matriz de Confusión 
+#%% Matriz de Confusión del caso óptimo 
 pixeles_seleccionados = [p1,p2,p3,p4]
 k = 5 
 X_train = subconjunto_0_8_TRAIN.iloc[:, pixeles_seleccionados].values
@@ -207,7 +207,7 @@ y_pred = modelo.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred) 
 print(f"Accuracy: {accuracy:.3f}") 
 
-# matriz 
+# Gráfico de la matriz de confusión: 
 y_pred = modelo.predict(X_test) 
 
 cmKNN = confusion_matrix(y_test, y_pred) 
@@ -321,7 +321,16 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-#%% Búsqueda de hiperparámetros con validación cruzada
+
+
+#%% A PARTIR DE ACA HAY QUE TERMINAR DE RESOLVER CORREGIR, ETC 
+# elegir las profundidades 
+# correr el código y ver los resultados para ponerlo en el infomre 
+# ver nueva matriz de confusiòn con paleta de color magma a ver si queda mejor que blues (entonces combinaria con las matrices de 
+# la clasificacion binaria 
+
+
+#%% Búsqueda de hiperparámetros con validación cruzada 
 param_grid = {
     'max_depth': [10],      # Rangos optimizados, OJO ERA HASTA 10 DE PROFUNDIDAD
     'min_samples_split': [5, 10, 20],
