@@ -98,9 +98,9 @@ print(cantidadPrendasPorClase)
 plt.figure(figsize=(12, 6))
 unique, counts = np.unique(Y, return_counts=True)
 plt.bar([clases[i] for i in unique], counts)
-plt.title("Cantidad Imagenes por Clase de Fashion MNIST")
-plt.xlabel("Prendas de Ropa")
-plt.ylabel("Cantidad")
+plt.title("Cantidad Imagenes por Clase de Fashion MNIST", fontsize = 14)
+plt.xlabel("Prendas de Ropa", fontsize= 14)
+plt.ylabel("Cantidad", fontsize= 14)
 plt.show()
 # obs: se puede observar que hay 7000 imágenes por prenda
 
@@ -366,9 +366,9 @@ resultados = resultado() #acá utilizamos la función definida al comienzo del a
 plt.figure(figsize=(10, 6))
 plt.plot(range(1, 11), train_scores, 'o-', label='dev')
 plt.plot(range(1, 11), test_scores, 'o-', label='held-out')
-plt.xlabel('Profundidad del Árbol')
-plt.ylabel('Exactitud')
-plt.title('Rendimiento vs Profundidad del Árbol')
+plt.xlabel('Profundidad del Árbol', fontsize = 13)
+plt.ylabel('Exactitud', fontsize= 13)
+plt.title('Rendimiento vs Profundidad del Árbol', fontsize= 13)
 plt.xticks(range(1, 11))
 plt.legend()
 plt.grid(True)
@@ -465,7 +465,7 @@ ax.bar([c + grosor/2 for c in clases], recallScore, grosor, label='Recall', colo
 
 ax.set_xlabel('Clases', fontsize = 19)
 ax.set_ylabel('Valor alcanzado', fontsize = 19)
-ax.set_title('Precisión y Recall por Clase', fontsize = 20, pad = 20)
+ax.set_title('Precision & Recall por Clase', fontsize = 20, pad = 20)
 ax.set_xticks(clases)
 ax.set_xticklabels(clases, fontsize=14)
 ax.tick_params(axis='y', labelsize=14)
@@ -474,5 +474,7 @@ ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
 
 plt.tight_layout()
 plt.show()
+
+
 
 
