@@ -24,7 +24,7 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, precision_score, recall_score, classification_report
-import duckdb as dd
+import duckdb 
 #%% ===============================================================================================
 # CARGA DE DATOS 
 # =================================================================================================
@@ -110,16 +110,24 @@ plt.figure(figsize=(15, 8))
 for i in range(10):
     plt.subplot(2, 5, i+1)
     label = (Y == i)
+    
     if np.sum(label) > 0:
         img = np.mean(X[label], axis=0).to_numpy().reshape(28, 28)
-        plt.imshow(img, cmap='bwr')
+        im = plt.imshow(img, cmap='bwr')
         plt.title(clases[i], fontsize=20) 
         plt.axis('off')
+       
 
 plt.subplots_adjust(wspace=0.08, hspace=0.08)  
+cax = plt.axes([0.92, 0.15, 0.02, 0.7])
+plt.colorbar(im, cax=cax)
 
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
+
 plt.show()
+
+
+
 #%% Imágenes desviación estándar por clase
 # Para analizar la diferencia entre prendas de una misma clase, analizamos la desviación estándar de intesidad de píxeles de cada una de ellas 
 plt.figure(figsize=(15, 8))
@@ -128,11 +136,13 @@ for i in range(10):
     label = (Y == i)
     if np.sum(label) > 0:
         img = np.std(X[label], axis=0).to_numpy().reshape(28, 28)
-        plt.imshow(img, cmap='bwr')
+        im = plt.imshow(img, cmap='bwr')
         plt.title(clases[i], fontsize=20) 
         plt.axis('off')
 
 plt.subplots_adjust(wspace=0.08, hspace=0.08)  
+cax = plt.axes([0.92, 0.15, 0.02, 0.7])
+plt.colorbar(im, cax=cax)
 
 plt.suptitle('Imágenes Desviación Estándar por Clase', fontsize=28, y=0.95)
 plt.show()
@@ -158,33 +168,35 @@ plt.show()
 # ¿La imagen corresponde a la clase 0 o a la clase 8? 
 # =================================================================================================
 
+
 #%% A partir del dataframe original, construimos uno nuevo que contenga sólo al subconjunto de imágenes que corresponden a la clase 0 y clase 8
 
 # Subconjunto clases 0 y 8
-subconjunto_0_8 = dd.sql("""SELECT *
+subconjunto_0_8 = duckdb.sql("""
+                SELECT *
                 FROM fashion
-                WHERE label = 0 OR label = 8;""").df()
+                WHERE label = 0 OR label = 8;
+                """).df()
 # Este subconjunto está balanceado, se tienen 7000 muestras de cada clase (según lo analizado en el punto 1)
 # Separamos el 80% para train y el restante 20% para test, ambos cantidades pares así que hacemos mitad de cada clase
-df_0 = dd.sql("""
+df_0 = duckdb.sql("""
     SELECT *
     FROM subconjunto_0_8
     WHERE label = 0
     LIMIT 5600
-""").df()
+    """).df()
 
-df_8 = dd.sql("""
+df_8 = duckdb.sql("""
     SELECT *
     FROM subconjunto_0_8
     WHERE label = 8
     LIMIT 5600
-""").df()
+    """).df()
 
 subconjunto_0_8_TRAIN = pd.concat([df_0, df_8]).sample(frac=1, random_state=1)  # barajamos
 # df y train tienen las mismas columnas
 diferencia = subconjunto_0_8.merge(subconjunto_0_8_TRAIN, how='outer', indicator=True)
 subconjunto_0_8_TEST = diferencia[diferencia['_merge'] == 'left_only'].drop(columns=['_merge'])
-
 #%% ===============================================================================================
 # SELECCIÓN DE ATRIBUTOS
 # =================================================================================================
@@ -436,8 +448,8 @@ print("Reporte de clasificación:\n", classification_report(Y_heldout, y_pred))
 error_rates = cm / cm.sum(axis=1)[:, np.newaxis]
 np.fill_diagonal(error_rates, 0)  # Eliminar aciertos
 
-max_errors = []
 for i in range(10):
+max_errors = []
     for j in range(10):
         if i != j and error_rates[i, j] > 0.01:  # Filtramos errores significativos
             max_errors.append((i, j, error_rates[i, j]))
@@ -474,6 +486,8 @@ ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
 
 plt.tight_layout()
 plt.show()
+
+
 
 
 
