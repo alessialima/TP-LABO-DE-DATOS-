@@ -161,6 +161,7 @@ plt.title("Diferencia promedio (sueter - camisa)")
 ticks = np.arange(0, 28, 2)
 plt.xticks(ticks, ticks, rotation=45, fontsize=8)
 plt.yticks(ticks, ticks, fontsize=8)
+plt.gca().grid(False) 
 
 plt.tight_layout()
 plt.show()
@@ -225,30 +226,45 @@ coordenadas_rojos = [divmod(idx, 28) for idx in indices_mas_rojos]
 coordenadas_azules = [(int(x), int(y)) for x, y in coordenadas_azules]
 coordenadas_rojos = [(int(x), int(y)) for x, y in coordenadas_rojos]
 
-print("Pixeles más azules:", coordenadas_azules)
-print("Pixeles más rojos:", coordenadas_rojos)
+print("Pixeles más azules:", indices_mas_azules, "\n", "· Coordenadas:", coordenadas_azules)
+print("Pixeles más rojos:", indices_mas_rojos, "\n", "· Coordenadas:",  coordenadas_rojos)
 
 
 #%%
+combo1 = []
+for i in range(2):
+    combo1.append(int(indices_mas_azules[i]))
+for j in range(2):
+    combo1.append(int(indices_mas_rojos[j]))
+    
+print("combo 1", combo1)   
 
-indicesTotales = []
+combo2 = []
 for i in range(len(indices_mas_azules)):
-    indicesTotales.append(int(indices_mas_azules[i]))
-
+    combo2.append(int(indices_mas_azules[i]))
 for j in range(len(indices_mas_rojos)):
-     indicesTotales.append(int(indices_mas_rojos[j]))
-      
+    combo2.append(int(indices_mas_rojos[j]))
+    
+print("combo 2", combo2)   
 
-valores_k = range(1, 21)
+#%%
+
+num = random.randint(500, 560)
+a = num
+
+combinaciones = { 'combo 1 (65,+ nro random)': [a, combo1[0], combo1[3]],
+                 'combo 2 (65, 554)': [combo1[3], combo1[0]], 
+                 'combo 3 (65, 526)': [combo1[3], combo1[1]],
+                 'combo 4 (526, 43)': [combo1[1], combo1[2]], 
+                 'combo 5 (554, 526, 43)': [combo1[0], combo1[1], combo1[2]],
+                 'caso todos': combo1
+                 
+                 }
+
+# notamos que el pixel combo1[3] no es necesario, pero que los demas, en conjunto, si
+
+valores_k = range(1, 20)
 resultados = []
-
-combinaciones = {} 
-n_combinaciones = 10 
-tamanos_combinaciones = [5] # cuantos pixeles combina   
-for i in range(n_combinaciones):
-    tam = random.choice(tamanos_combinaciones)
-    combo = random.sample(indicesTotales, tam)
-    combinaciones[f"Comb_{i+1}_({tam}pix)"] = combo
 
 # Etiquetas
 y_train = subconjunto_0_8_TRAIN["label"].values
@@ -259,26 +275,44 @@ for nombre, atributos in combinaciones.items():
     X_train = subconjunto_0_8_TRAIN.iloc[:, atributos].values
     X_test = subconjunto_0_8_TEST.iloc[:, atributos].values
 
-for k in valores_k:
-        model = KNeighborsClassifier(n_neighbors=k)
-        model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)
-        
+    for k in valores_k:
+        modelo = KNeighborsClassifier(n_neighbors=k)
+        modelo.fit(X_train, y_train)
+        y_pred = modelo.predict(X_test)
+        acc = accuracy_score(y_test, y_pred)
+
         resultados.append({
-            'Combinación': nombre,
-            'Píxeles': atributos,
-            'k': k,
-            'accuracy': accuracy_score(y_test, y_pred)
+            "combinacion": nombre,
+            "k": k,
+            "accuracy": acc * 100
         })
 
-
+# Resultados:
 df_resultados = pd.DataFrame(resultados)
-df_resultados = df_resultados.sort_values('accuracy', ascending=False).reset_index(drop=True)
+print(df_resultados.sort_values(by="accuracy", ascending=False))
 
-# Resultados
-print("\nResultados ordenados por Exactitud (Accuracy):")
-print(df_resultados[['Combinación', 'Píxeles', 'k', 'accuracy']].head(10))
+print(a)
 
+#%% Gráfico exactitud por k segun mejores combos 
+import seaborn as sns
+
+plt.figure(figsize=(10, 6))
+sns.lineplot(
+    data=df_resultados,
+    x='k',
+    y='accuracy',
+    hue='combinacion',
+    marker='o',
+    linewidth=2
+)
+plt.title('Exactitud según profundidad para cada combinación de píxeles')
+plt.xlabel('Profundidad (k)')
+plt.ylabel('Exactitud (%)')
+plt.xticks(valores_k)
+plt.grid(True)
+plt.legend(bbox_to_anchor=(1.05, 1))
+plt.tight_layout()
+plt.show()
 
 
 #%% Reporte de Clasificación (buscamos mostrar las métricas en un cuadro)
@@ -290,35 +324,42 @@ print("Reporte de clasificación:", "\n", "\n".join(lineas_filtradas))
 
 # Guiándonos por la exactitud, el mejor modelo de estas combinaciones sería el que toma los 4 píxeles de atributo y un k=5
 
-#%% Matriz de Confusión del caso óptimo 
-pixeles_seleccionados = [44, 554, 39, 538, 470]
-k = 20
-X_train = subconjunto_0_8_TRAIN.iloc[:, pixeles_seleccionados].values
-X_test = subconjunto_0_8_TEST.iloc[:, pixeles_seleccionados].values
+#%% Matriz de Confusión de los mejores 4 casos
 
-modelo = KNeighborsClassifier(n_neighbors = k) 
-modelo.fit(X_train, y_train) 
-y_pred = modelo.predict(X_test) 
+combos_seleccionados = []
+k_seleccionadas = []
+
+for i in range(len(combos_seleccionados)): 
+    pixeles_seleccionados = combos_seleccionados[i]
+    k = k_seleccionadas[i]
+    X_train = subconjunto_0_8_TRAIN.iloc[:, pixeles_seleccionados].values
+    X_test = subconjunto_0_8_TEST.iloc[:, pixeles_seleccionados].values
+
+    modelo = KNeighborsClassifier(n_neighbors = k) 
+    modelo.fit(X_train, y_train) 
+    y_pred = modelo.predict(X_test) 
 
 # Calculo Exactitud 
-accuracy = accuracy_score(y_test, y_pred) 
-print(f"Accuracy: {accuracy:.3f}") 
+    accuracy = accuracy_score(y_test, y_pred) 
+    print("Mejores Casos","\n",f"Combo: {i+1}",f"Accuracy: {accuracy:.3f}") 
 
 # Gráfico de la matriz de confusión: 
-y_pred = modelo.predict(X_test) 
+    y_pred = modelo.predict(X_test) 
 
-cmKNN = confusion_matrix(y_test, y_pred) 
-dispKNN = ConfusionMatrixDisplay(confusion_matrix = cmKNN, display_labels = [0,8])
+    cmKNN = confusion_matrix(y_test, y_pred) 
+    dispKNN = ConfusionMatrixDisplay(confusion_matrix = cmKNN, display_labels = [0,8])
 
-plt.figure(figsize=(2.5, 2.5)) 
-dispKNN.plot(cmap='Blues', values_format='d', colorbar = False, ax=plt.gca()) 
-plt.gca().set_aspect('equal', 'box')
+    plt.figure(figsize=(2.5, 2.5)) 
+    dispKNN.plot(cmap='Blues', values_format='d', colorbar = False, ax=plt.gca()) 
+    plt.gca().set_aspect('equal', 'box')
+    plt.gca().grid(False) 
 
-dispKNN.ax_.set_xlabel("Predicted", fontsize = 12) 
-dispKNN.ax_.set_ylabel("Actual", fontsize = 12) 
+    dispKNN.ax_.set_xlabel("Predicted", fontsize = 12) 
+    dispKNN.ax_.set_ylabel("Actual", fontsize = 12) 
 
-plt.tight_layout()
-plt.show()
+    plt.tight_layout()
+    plt.show()
+
 
 #%% Gráfico que visualiza la comparación entre los promedios de ambas clases
 # además de mostrar en los extremos el promedio de cada clase en sí
@@ -328,23 +369,25 @@ label0 = (Y == 0)
 img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
 plt.imshow(img0, cmap='bwr')
 plt.colorbar(fraction=0.046, pad=0.04)  
-for (fila, columna) in coordenadas_rojos:
-    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2)  
-
+plt.gca().grid(False) 
 
 plt.subplot(1, 3, 3)
 label8 = (Y == 8)
 img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
 plt.imshow(img8, cmap='bwr_r')
 plt.colorbar(fraction=0.046, pad=0.04)  
-for (fila, columna) in coordenadas_azules:
-    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2)  
+plt.gca().grid(False) 
 
 plt.subplot(1,3,2)
 remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
 bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
 diferencia = (remeras - bolsos).values.reshape(28, 28)
 im_diff = plt.imshow(diferencia, cmap='bwr')
+for (fila, columna) in coordenadas_rojos:
+    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2)  
+for (fila, columna) in coordenadas_azules:
+    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2) 
+plt.gca().grid(False) 
 
 cbar = plt.colorbar(im_diff, fraction=0.046, pad=0.04)
 cbar.set_ticks([diferencia.min(), diferencia.max()])
@@ -363,6 +406,7 @@ plt.title("Diferencia promedio (remera - bolso)")
 ticks = np.arange(0, 28, 2)
 plt.xticks(ticks, ticks, rotation=45, fontsize=8)
 plt.yticks(ticks, ticks, fontsize=8)
+plt.gca().grid(False) 
 
 plt.tight_layout()
 plt.show()
@@ -373,12 +417,14 @@ label0 = (Y == 1)
 img0 = np.std(X[label0], axis=0).to_numpy().reshape(28, 28)
 plt.imshow(img0, cmap='bwr')
 plt.colorbar(fraction=0.046, pad=0.04)
+plt.gca().grid(False) 
 
 plt.subplot(1, 3, 3)
 label8 = (Y == 6)
 img8 = np.std(X[label8], axis=0).to_numpy().reshape(28, 28)
 plt.imshow(img8, cmap='bwr')
 plt.colorbar(fraction=0.046, pad=0.04)
+plt.gca().grid(False) 
 
 plt.subplot(1,3,2)
 zapatilla = fashion[fashion["label"] == 7].iloc[:, :784].mean()
@@ -386,6 +432,7 @@ pantalones = fashion[fashion["label"] == 1].iloc[:, :784].mean()
 diferencia = (zapatilla - pantalones).values.reshape(28, 28)
 plt.imshow(diferencia, cmap='bwr')
 plt.colorbar(fraction=0.046, pad=0.04)
+plt.gca().grid(False) 
 
 plt.subplots_adjust(wspace=0.3, right=0.85)  
 plt.show()
@@ -439,7 +486,7 @@ tree = DecisionTreeClassifier(random_state=42)
 grid_search = GridSearchCV(
     estimator=tree,
     param_grid=param_grid,
-    cv=3,                  
+    cv=10,                  
     scoring='accuracy',
     n_jobs=-1,              
     verbose=1               # Mostrar progreso
@@ -524,6 +571,8 @@ ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
 
 plt.tight_layout()
 plt.show()
+
+
 
 
 
