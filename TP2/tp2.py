@@ -25,6 +25,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, precision_score, recall_score, classification_report
 import duckdb 
+import random 
 #%% ===============================================================================================
 # CARGA DE DATOS 
 # =================================================================================================
@@ -36,6 +37,7 @@ fashion = pd.read_csv(ruta_moda, index_col=0)
 # =================================================================================================
 # Creamos una función para probar distintos árboles de decisión en la clasificación multiclase, 
 # variando su profundidad máxima y analizando su exactitud
+
 def resultado() -> dict():
     res = {}
     
@@ -46,19 +48,16 @@ def resultado() -> dict():
      )
      tree.fit(X_dev, Y_dev)
     
-     y_predict = tree.predict(X_heldout)
-     score = accuracy_score(Y_heldout, y_predict)
+     y_predict = tree.predict(X_dev)
+     score = accuracy_score(Y_dev, y_predict) * 100
     
      res[profundidad] = score
-     print(f'Profundidad: {profundidad}, Exactitud: {score:.4f}') # print para observar el avance
+     print(f'Profundidad: {profundidad}, Exactitud: {score:.2f}%') # print para observar el avance
      
      train_acc = tree.score(X_dev, Y_dev)
-     test_acc = tree.score(X_heldout, Y_heldout)
 
      train_scores.append(train_acc)
-     test_scores.append(test_acc)
-   
-    return res
+    return res 
 #%% ===============================================================================================
 # SEPARACIÓN DE VARIABLES 
 # =================================================================================================
@@ -120,7 +119,8 @@ for i in range(10):
 
 plt.subplots_adjust(wspace=0.08, hspace=0.08)  
 cax = plt.axes([0.92, 0.15, 0.02, 0.7])
-plt.colorbar(im, cax=cax)
+cbar = plt.colorbar(im, cax=cax)
+cbar.ax.tick_params(labelsize=18)
 
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 
@@ -142,7 +142,8 @@ for i in range(10):
 
 plt.subplots_adjust(wspace=0.08, hspace=0.08)  
 cax = plt.axes([0.92, 0.15, 0.02, 0.7])
-plt.colorbar(im, cax=cax)
+cbar = plt.colorbar(im, cax=cax)
+cbar.ax.tick_params(labelsize=18)
 
 plt.suptitle('Imágenes Desviación Estándar por Clase', fontsize=28, y=0.95)
 plt.show()
@@ -213,11 +214,11 @@ flat = diferencia.flatten()
 indices_ordenados = np.argsort(flat)
 
 # Más azules (valores mínimos)
-indices_mas_azules = indices_ordenados[:2] #quiero seleccionar los primeros 2 más azules
+indices_mas_azules = indices_ordenados[:10] #quiero seleccionar los primeros 2 más azules
 coordenadas_azules = [divmod(idx, 28) for idx in indices_mas_azules] #para la cuenta recuerdo que hice la transformación, por eso el divmod
 
 # Más rojos (valores máximos)
-indices_mas_rojos = indices_ordenados[-2:] #los últimos dos corresponden a los dos más rojos
+indices_mas_rojos = indices_ordenados[-10:] #los últimos dos corresponden a los dos más rojos
 coordenadas_rojos = [divmod(idx, 28) for idx in indices_mas_rojos]
 
 # Convertir coordenadas a enteros
@@ -227,23 +228,27 @@ coordenadas_rojos = [(int(x), int(y)) for x, y in coordenadas_rojos]
 print("Pixeles más azules:", coordenadas_azules)
 print("Pixeles más rojos:", coordenadas_rojos)
 
-#%% 
-# Atributos seleccionados serán los píxeles p1, p2, p3, p4
-p1 = indices_mas_azules[0] #554
-p2 = indices_mas_azules[1] #526
-  
-p3 = indices_mas_rojos[0] #70
-p4 = indices_mas_rojos[1] #39
-   
-combinaciones = {
-    "Combo 1 (2 pixeles)": [p1, p3],
-    "Combo 2 (3 pixeles)": [p1, p2, p3],
-    "Combo 3 (3 pixeles)": [p1, p3, p4],
-    "Combo 4 (4 pixeles)": [p1, p2, p3, p4],
-}
 
-valores_k = [1, 5, 15, 20]
+#%%
+
+indicesTotales = []
+for i in range(len(indices_mas_azules)):
+    indicesTotales.append(int(indices_mas_azules[i]))
+
+for j in range(len(indices_mas_rojos)):
+     indicesTotales.append(int(indices_mas_rojos[j]))
+      
+
+valores_k = range(1, 21)
 resultados = []
+
+combinaciones = {} 
+n_combinaciones = 10 
+tamanos_combinaciones = [5] # cuantos pixeles combina   
+for i in range(n_combinaciones):
+    tam = random.choice(tamanos_combinaciones)
+    combo = random.sample(indicesTotales, tam)
+    combinaciones[f"Comb_{i+1}_({tam}pix)"] = combo
 
 # Etiquetas
 y_train = subconjunto_0_8_TRAIN["label"].values
@@ -254,28 +259,40 @@ for nombre, atributos in combinaciones.items():
     X_train = subconjunto_0_8_TRAIN.iloc[:, atributos].values
     X_test = subconjunto_0_8_TEST.iloc[:, atributos].values
 
-    for k in valores_k:
-        modelo = KNeighborsClassifier(n_neighbors=k)
-        modelo.fit(X_train, y_train)
-        y_pred = modelo.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-
+for k in valores_k:
+        model = KNeighborsClassifier(n_neighbors=k)
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        
         resultados.append({
-            "combinacion": nombre,
-            "k": k,
-            "accuracy": acc
+            'Combinación': nombre,
+            'Píxeles': atributos,
+            'k': k,
+            'accuracy': accuracy_score(y_test, y_pred)
         })
 
-# Resultados:
+
 df_resultados = pd.DataFrame(resultados)
-print(df_resultados.sort_values(by="accuracy", ascending=False))
-print("Reporte de clasificación:\n", classification_report(y_test, y_pred))
+df_resultados = df_resultados.sort_values('accuracy', ascending=False).reset_index(drop=True)
+
+# Resultados
+print("\nResultados ordenados por Exactitud (Accuracy):")
+print(df_resultados[['Combinación', 'Píxeles', 'k', 'accuracy']].head(10))
+
+
+
+#%% Reporte de Clasificación (buscamos mostrar las métricas en un cuadro)
+
+reporte = classification_report(y_test, y_pred)
+lineas = reporte.split("\n")
+lineas_filtradas = [linea for linea in lineas if "macro avg" not in linea and "weighted avg" not in linea]
+print("Reporte de clasificación:", "\n", "\n".join(lineas_filtradas))
 
 # Guiándonos por la exactitud, el mejor modelo de estas combinaciones sería el que toma los 4 píxeles de atributo y un k=5
 
 #%% Matriz de Confusión del caso óptimo 
-pixeles_seleccionados = [p1,p2,p3,p4]
-k = 5 
+pixeles_seleccionados = [44, 554, 39, 538, 470]
+k = 20
 X_train = subconjunto_0_8_TRAIN.iloc[:, pixeles_seleccionados].values
 X_test = subconjunto_0_8_TEST.iloc[:, pixeles_seleccionados].values
 
@@ -293,8 +310,9 @@ y_pred = modelo.predict(X_test)
 cmKNN = confusion_matrix(y_test, y_pred) 
 dispKNN = ConfusionMatrixDisplay(confusion_matrix = cmKNN, display_labels = [0,8])
 
-plt.figure(figsize=(12,10)) 
-dispKNN.plot(cmap='Blues', values_format='d', colorbar = False) 
+plt.figure(figsize=(2.5, 2.5)) 
+dispKNN.plot(cmap='Blues', values_format='d', colorbar = False, ax=plt.gca()) 
+plt.gca().set_aspect('equal', 'box')
 
 dispKNN.ax_.set_xlabel("Predicted", fontsize = 12) 
 dispKNN.ax_.set_ylabel("Actual", fontsize = 12) 
@@ -309,19 +327,33 @@ plt.subplot(1, 3, 1)
 label0 = (Y == 0)
 img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
 plt.imshow(img0, cmap='bwr')
+plt.colorbar(fraction=0.046, pad=0.04)  
+for (fila, columna) in coordenadas_rojos:
+    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2)  
+
 
 plt.subplot(1, 3, 3)
 label8 = (Y == 8)
 img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img8, cmap='bwr')
+plt.imshow(img8, cmap='bwr_r')
+plt.colorbar(fraction=0.046, pad=0.04)  
+for (fila, columna) in coordenadas_azules:
+    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2)  
 
 plt.subplot(1,3,2)
 remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
 bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
 diferencia = (remeras - bolsos).values.reshape(28, 28)
-plt.imshow(diferencia, cmap='bwr')
+im_diff = plt.imshow(diferencia, cmap='bwr')
 
-plt.subplots_adjust(wspace=0.12)  
+cbar = plt.colorbar(im_diff, fraction=0.046, pad=0.04)
+cbar.set_ticks([diferencia.min(), diferencia.max()])
+cbar.set_ticklabels(['BOLSO', 'REMERA']) 
+cbar.ax.tick_params(labelsize=10)
+
+
+plt.subplots_adjust(wspace=0.3, right=0.85) 
+
 plt.show()
 
 #%% Gráfico que visualiza sólo la diferencia de promedios de clase 
@@ -340,19 +372,22 @@ plt.subplot(1, 3, 1)
 label0 = (Y == 1)
 img0 = np.std(X[label0], axis=0).to_numpy().reshape(28, 28)
 plt.imshow(img0, cmap='bwr')
+plt.colorbar(fraction=0.046, pad=0.04)
 
 plt.subplot(1, 3, 3)
 label8 = (Y == 6)
 img8 = np.std(X[label8], axis=0).to_numpy().reshape(28, 28)
 plt.imshow(img8, cmap='bwr')
+plt.colorbar(fraction=0.046, pad=0.04)
 
 plt.subplot(1,3,2)
 zapatilla = fashion[fashion["label"] == 7].iloc[:, :784].mean()
 pantalones = fashion[fashion["label"] == 1].iloc[:, :784].mean()
 diferencia = (zapatilla - pantalones).values.reshape(28, 28)
 plt.imshow(diferencia, cmap='bwr')
+plt.colorbar(fraction=0.046, pad=0.04)
 
-plt.subplots_adjust(wspace=0.12)  
+plt.subplots_adjust(wspace=0.3, right=0.85)  
 plt.show()
 #%% ===============================================================================================
 # CLASIFICACIÓN MULTICLASE
@@ -370,19 +405,22 @@ X_dev, X_heldout, Y_dev, Y_heldout = train_test_split(
 #%% Ajustamos un modelo de arbol de decisión y lo entrenamos con distintas profundidades del 1 al 10
 
 train_scores = []
-test_scores = []
 resultados = resultado() #acá utilizamos la función definida al comienzo del archivo
-
+#%%
+print(resultados)
 #%% Gráfico Rendimiento vs Profundidad del Árbol
 
-plt.figure(figsize=(10, 6))
-plt.plot(range(1, 11), train_scores, 'o-', label='dev')
-plt.plot(range(1, 11), test_scores, 'o-', label='held-out')
+profundidades = list(resultados.keys())
+exactitudes = list(resultados.values())
+
+plt.figure(figsize=(8, 5))
+
+plt.plot(profundidades, exactitudes, 'o-', color='blue', markersize=8, linewidth=2, label='Exactitud (Dev)')
 plt.xlabel('Profundidad del Árbol', fontsize = 13)
-plt.ylabel('Exactitud', fontsize= 13)
+plt.ylabel('Exactitud (%)', fontsize= 13)
 plt.title('Rendimiento vs Profundidad del Árbol', fontsize= 13)
 plt.xticks(range(1, 11))
-plt.legend()
+
 plt.grid(True)
 plt.show()
 
@@ -449,7 +487,7 @@ error_rates = cm / cm.sum(axis=1)[:, np.newaxis]
 np.fill_diagonal(error_rates, 0)  # Eliminar aciertos
 
 for i in range(10):
-max_errors = []
+    max_errors = []
     for j in range(10):
         if i != j and error_rates[i, j] > 0.01:  # Filtramos errores significativos
             max_errors.append((i, j, error_rates[i, j]))
@@ -486,6 +524,7 @@ ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
 
 plt.tight_layout()
 plt.show()
+
 
 
 
