@@ -33,7 +33,32 @@ import random
 carpetaOriginal = os.path.dirname(os.path.abspath(__file__))
 ruta_moda = os.path.join(carpetaOriginal, "Fashion-MNIST.csv", ) 
 fashion = pd.read_csv(ruta_moda, index_col=0)
+#%% ===============================================================================================
+# FUNCIONES DEFINIDAS
+# =================================================================================================
+# Creamos una función para probar distintos árboles de decisión en la clasificación multiclase, 
+# variando su profundidad máxima y analizando su exactitud
 
+def resultado() -> dict():
+    res = {}
+    
+    for profundidad in range(1, 11): #profundidades entre 1 y 10
+     tree = DecisionTreeClassifier(
+        max_depth = profundidad,
+        random_state=42
+     )
+     tree.fit(X_dev, Y_dev)
+    
+     y_predict = tree.predict(X_heldout)
+     score = accuracy_score(Y_heldout, y_predict) * 100
+    
+     res[profundidad] = score
+     print(f'Profundidad: {profundidad}, Exactitud: {score:.2f}%') # print para observar el avance
+     
+     test_acc = tree.score(X_heldout, Y_heldout)
+     test_scores.append(test_acc)
+     
+    return res 
 #%% ===============================================================================================
 # SEPARACIÓN DE VARIABLES 
 # =================================================================================================
@@ -88,7 +113,7 @@ for i in range(10):
     
     if np.sum(label) > 0:
         img = np.mean(X[label], axis=0).to_numpy().reshape(28, 28)
-        im = plt.imshow(img, cmap='bwr')
+        im = plt.imshow(img, cmap='Greys')
         plt.title(clases[i], fontsize=20) 
         plt.axis('off')
        
@@ -112,7 +137,7 @@ for i in range(10):
     label = (Y == i)
     if np.sum(label) > 0:
         img = np.std(X[label], axis=0).to_numpy().reshape(28, 28)
-        im = plt.imshow(img, cmap='bwr')
+        im = plt.imshow(img, cmap='Greys')
         plt.title(clases[i], fontsize=20) 
         plt.axis('off')
 
@@ -179,23 +204,26 @@ subconjunto_0_8_TEST = diferencia[diferencia['_merge'] == 'left_only'].drop(colu
 # SELECCIÓN DE ATRIBUTOS
 # =================================================================================================
 
-# Promedio de píxeles por clase
+# Paso 1: calculamos los píxeles promedio de cada clase 
 remeras_promedio = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
 bolsos_promedio = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
 
-# Diferencia promedio entre clases
+# diferencia promedio entre clases
 diferencia = (remeras_promedio - bolsos_promedio).values.reshape(28, 28)
 
-# índices ordenados según el valor al que refieren de menor a mayor 
+# ordenamos a los índices según cuan cercano esté a una clase 
+# en este caso, los valores mínimos serán los más cercanos a clase BOLSO 
+# y los valores máximos estarán más cerca de la clase REMERA 
+ 
 flat = diferencia.flatten()
 indices_ordenados = np.argsort(flat)
 
 # Más azules (valores mínimos): más cercanos a clase BOLSO 
-indices_mas_azules = indices_ordenados[:10] #quiero seleccionar los primeros 2 más azules
-coordenadas_azules = [divmod(idx, 28) for idx in indices_mas_azules] #para la cuenta recuerdo que hice la transformación, por eso el divmod
+indices_mas_azules = indices_ordenados[:5] # acá pongo cuántos quiero seleccionar 
+coordenadas_azules = [divmod(idx, 28) for idx in indices_mas_azules] 
 
 # Más rojos (valores máximos): más cercanos a clase REMERA
-indices_mas_rojos = indices_ordenados[-10:] #los últimos dos corresponden a los dos más rojos
+indices_mas_rojos = indices_ordenados[-5:] # acá pongo cuántos quiero seleccionar 
 coordenadas_rojos = [divmod(idx, 28) for idx in indices_mas_rojos]
 
 # Convertir coordenadas a enteros
@@ -205,6 +233,8 @@ coordenadas_rojos = [(int(x), int(y)) for x, y in coordenadas_rojos]
 print("Pixeles más azules:", indices_mas_azules, "\n", "· Coordenadas:", coordenadas_azules)
 print("Pixeles más rojos:", indices_mas_rojos, "\n", "· Coordenadas:",  coordenadas_rojos)
 
+# indices: píxeles 
+# coordenadas: sus coordenadas dentro de la matriz 
 
 #%%
 combo1 = []
@@ -212,7 +242,7 @@ for i in range(2):
     combo1.append(int(indices_mas_azules[i]))
 for j in range(2):
     combo1.append(int(indices_mas_rojos[j]))
-    
+    # creo el primer combo con los mejores 4 píxeles
 print("combo 1", combo1)   
 
 combo2 = []
@@ -220,11 +250,12 @@ for i in range(len(indices_mas_azules)):
     combo2.append(int(indices_mas_azules[i]))
 for j in range(len(indices_mas_rojos)):
     combo2.append(int(indices_mas_rojos[j]))
-    
+    # creo el segundo combo con más píxeles 
 print("combo 2", combo2)   
 
 #%%
 
+# números random 
 num = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
 a = num
 num2 = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
@@ -232,6 +263,7 @@ b = num2
 num3 = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
 c = num3
 
+# creamos combinaciones junto con los dos conjuntos y números random 
 combinaciones = { 'combo 1 (conjunto 2 & 3 random)': combo2 + [a,b,c], 
                  'combo 2 (conjunto 2)': combo2, 
                  'combo 3 (conjunto 2 & 2 random)': combo2 + [a,b],
@@ -239,7 +271,7 @@ combinaciones = { 'combo 1 (conjunto 2 & 3 random)': combo2 + [a,b,c],
                 }
 combinaciones_lista = list(combinaciones.values())
 
-print(a,b,c) # 187 758 189 
+print(a,b,c) 
 #%%
 
 valores_k = range(1, 20)
@@ -286,12 +318,12 @@ mejores_k_por_combinacion = df_resultados.loc[df_resultados.groupby('combinacion
 mejores_k_ordenados = mejores_k_por_combinacion.sort_values('accuracy', ascending=False)
 
 
-#%%
+#%% VISUALIZACIÓN DE MEJORES RESULTADOS Y SUS MÉTRICAS (desordenado)
 
 columnas_visualizacion = ['combinacion', 'atributos', 'k', 'accuracy', 'precision', 'recall', 'f1']
 resultados_finales = mejores_k_ordenados[columnas_visualizacion].copy()
 
-print("\nNúmero random:", a)
+print("\nNúmero random:", a, b, c) 
 
 #%% Gráfico exactitud por k segun mejores combos 
 
@@ -326,7 +358,8 @@ plt.show()
 combos_seleccionados = resultados_finales['atributos'].tolist()
 k_seleccionadas = resultados_finales['k'].tolist()
 
-for i in range(3): 
+
+for i in range(len(combos_seleccionados)): 
     pixeles_seleccionados = combos_seleccionados[i]
     k = k_seleccionadas[i]
     X_train = subconjunto_0_8_TRAIN.iloc[:, pixeles_seleccionados].values
@@ -433,11 +466,11 @@ plt.gca().grid(False)
 
 plt.subplots_adjust(wspace=0.3, right=0.85)  
 plt.show()
+
 #%% ===============================================================================================
 # CLASIFICACIÓN MULTICLASE
 # ¿A cuál de las 10 clases corresponde la imagen? 
 # =================================================================================================
-
 # Separamos los datos en desarrollo dev (80%) y validación heldout (20%)
 X_dev, X_heldout, Y_dev, Y_heldout = train_test_split(
     X, Y,
@@ -445,13 +478,17 @@ X_dev, X_heldout, Y_dev, Y_heldout = train_test_split(
     stratify=Y,
     random_state=20
 )
+# divido los datos en desarrolo dev, en train y test para búsqueda de hiperparámetros
+X_train, X_test, Y_train, Y_test = train_test_split(
+    X_dev, Y_dev, test_size=0.2, stratify=Y_dev, random_state=42
+)
+
 
 #%% Ajustamos un modelo de arbol de decisión y lo entrenamos con distintas profundidades del 1 al 10
 
-train_scores = []
+test_scores = []
 resultados = resultado() #acá utilizamos la función definida al comienzo del archivo
-#%%
-print(resultados)
+
 #%% Gráfico Rendimiento vs Profundidad del Árbol
 
 profundidades = list(resultados.keys())
@@ -483,13 +520,13 @@ tree = DecisionTreeClassifier(random_state=42)
 grid_search = GridSearchCV(
     estimator=tree,
     param_grid=param_grid,
-    cv=10,                  
+    cv=3,                  
     scoring='accuracy',
     n_jobs=-1,              
     verbose=1               # Mostrar progreso
 )
 
-grid_search.fit(X_dev, Y_dev)
+grid_search.fit(X_train,Y_train)
 
 # Resultados de la búsqueda:
 best_params = grid_search.best_params_
@@ -498,12 +535,13 @@ print(f"\nMejores parámetros: {best_params}")
 print(f"Mejor accuracy en validación cruzada: {best_score:.4f}")
 
 #%% Evaluación final con conjunto held-out
-best_tree = DecisionTreeClassifier(**best_params, random_state=42)
-best_tree.fit(X_dev, Y_dev)
+best_tree = DecisionTreeClassifier(**grid_search.best_params_, random_state=42)
+best_tree.fit(X_train,Y_train)
+
 
 # Predecir y evaluar
 y_pred = best_tree.predict(X_heldout)
-heldout_acc = accuracy_score(Y_heldout, y_pred)
+heldout_acc = accuracy_score(Y_heldout,y_pred)
 print(f"\nAccuracy en conjunto held-out: {heldout_acc:.4f}")
 
 #%% Matriz de confusión
@@ -568,10 +606,6 @@ ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
 
 plt.tight_layout()
 plt.show()
-
-
-
-
 
 
 
