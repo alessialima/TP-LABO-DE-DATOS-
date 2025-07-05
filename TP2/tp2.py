@@ -25,6 +25,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, precision_score, recall_score, classification_report
 import duckdb 
+import seaborn as sns
 import random 
 #%% ===============================================================================================
 # CARGA DE DATOS 
@@ -249,19 +250,19 @@ print("combo 2", combo2)
 
 #%%
 
-num = random.randint(500, 560)
+num = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
 a = num
 
-combinaciones = { 'combo 1 (65,+ nro random)': [a, combo1[0], combo1[3]],
-                 'combo 2 (65, 554)': [combo1[3], combo1[0]], 
-                 'combo 3 (65, 526)': [combo1[3], combo1[1]],
-                 'combo 4 (526, 43)': [combo1[1], combo1[2]], 
-                 'combo 5 (554, 526, 43)': [combo1[0], combo1[1], combo1[2]],
-                 'caso todos': combo1
-                 
-                 }
 
-# notamos que el pixel combo1[3] no es necesario, pero que los demas, en conjunto, si
+combinaciones = { 'combo 1 (554, 63, nro random)': [a, combo1[0], combo1[3]],
+                 'combo 2 (65, 554)': [combo1[3], combo1[0]], 
+                 'combo 3 (65, 526)': [combo1[3], combo1[1], 544] + combo2,
+                 'combo 4 (todos)': combo1 + [544]
+                }
+combinaciones_lista = list(combinaciones.values())
+
+print(a)
+#%%
 
 valores_k = range(1, 20)
 resultados = []
@@ -270,8 +271,11 @@ resultados = []
 y_train = subconjunto_0_8_TRAIN["label"].values
 y_test = subconjunto_0_8_TEST["label"].values
 
+i = -1
+
 # Evaluación 
 for nombre, atributos in combinaciones.items():
+    i+=1
     X_train = subconjunto_0_8_TRAIN.iloc[:, atributos].values
     X_test = subconjunto_0_8_TEST.iloc[:, atributos].values
 
@@ -280,21 +284,49 @@ for nombre, atributos in combinaciones.items():
         modelo.fit(X_train, y_train)
         y_pred = modelo.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
+        report = classification_report(y_test, y_pred, output_dict=True)
 
         resultados.append({
             "combinacion": nombre,
+            "atributos": combinaciones_lista[i],
             "k": k,
-            "accuracy": acc * 100
+            "accuracy": acc,
+            "precision": report['macro avg']['precision'] * 100,
+            "recall": report['macro avg']['recall'] * 100,
+            "f1": report['macro avg']['f1-score'] * 100
         })
+
+
 
 # Resultados:
 df_resultados = pd.DataFrame(resultados)
-print(df_resultados.sort_values(by="accuracy", ascending=False))
+print(df_resultados)
 
-print(a)
+#%%
+# Encontrar el mejor k por combinación basado en accuracy
+mejores_k_por_combinacion = df_resultados.loc[df_resultados.groupby('combinacion')['accuracy'].idxmax()]
+mejores_k_ordenados = mejores_k_por_combinacion.sort_values('accuracy', ascending=False)
+
+
+#%%
+columnas_visualizacion = ['combinacion', 'atributos', 'k', 'accuracy', 'precision', 'recall', 'f1']
+resultados_finales = mejores_k_ordenados[columnas_visualizacion].copy()
+
+for col in ['accuracy', 'precision', 'recall', 'f1']:
+    resultados_finales[col] = resultados_finales[col].apply(lambda x: f"{x:.2f}%")
+
+print(resultados_finales.to_string(
+    index=False,
+    justify='center',
+    formatters={
+        'combinacion': lambda x: f"{x:<25}"
+    }
+))
+print("\n")
+print("Número random:", a)
 
 #%% Gráfico exactitud por k segun mejores combos 
-import seaborn as sns
+
 
 plt.figure(figsize=(10, 6))
 sns.lineplot(
@@ -305,8 +337,8 @@ sns.lineplot(
     marker='o',
     linewidth=2
 )
-plt.title('Exactitud según profundidad para cada combinación de píxeles')
-plt.xlabel('Profundidad (k)')
+plt.title('Exactitud según k para cada combinación de píxeles')
+plt.xlabel('Vecinos más cercanos (k)')
 plt.ylabel('Exactitud (%)')
 plt.xticks(valores_k)
 plt.grid(True)
@@ -314,22 +346,12 @@ plt.legend(bbox_to_anchor=(1.05, 1))
 plt.tight_layout()
 plt.show()
 
-
-#%% Reporte de Clasificación (buscamos mostrar las métricas en un cuadro)
-
-reporte = classification_report(y_test, y_pred)
-lineas = reporte.split("\n")
-lineas_filtradas = [linea for linea in lineas if "macro avg" not in linea and "weighted avg" not in linea]
-print("Reporte de clasificación:", "\n", "\n".join(lineas_filtradas))
-
-# Guiándonos por la exactitud, el mejor modelo de estas combinaciones sería el que toma los 4 píxeles de atributo y un k=5
-
 #%% Matriz de Confusión de los mejores 4 casos
 
-combos_seleccionados = []
-k_seleccionadas = []
+combos_seleccionados = resultados_finales['atributos'].tolist()
+k_seleccionadas = resultados_finales['k'].tolist()
 
-for i in range(len(combos_seleccionados)): 
+for i in range(3): 
     pixeles_seleccionados = combos_seleccionados[i]
     k = k_seleccionadas[i]
     X_train = subconjunto_0_8_TRAIN.iloc[:, pixeles_seleccionados].values
@@ -367,22 +389,22 @@ plt.figure(figsize=(15, 5))
 plt.subplot(1, 3, 1)
 label0 = (Y == 0)
 img0 = np.mean(X[label0], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img0, cmap='bwr')
+plt.imshow(img0, cmap='Reds')
 plt.colorbar(fraction=0.046, pad=0.04)  
 plt.gca().grid(False) 
 
 plt.subplot(1, 3, 3)
 label8 = (Y == 8)
 img8 = np.mean(X[label8], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img8, cmap='bwr_r')
+plt.imshow(img8, cmap='Blues')
 plt.colorbar(fraction=0.046, pad=0.04)  
 plt.gca().grid(False) 
 
 plt.subplot(1,3,2)
 remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
 bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
-diferencia = (remeras - bolsos).values.reshape(28, 28)
-im_diff = plt.imshow(diferencia, cmap='bwr')
+diferencia = (bolsos-remeras).values.reshape(28, 28)
+im_diff = plt.imshow(diferencia, cmap='RdBu')
 for (fila, columna) in coordenadas_rojos:
     plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2)  
 for (fila, columna) in coordenadas_azules:
@@ -390,8 +412,8 @@ for (fila, columna) in coordenadas_azules:
 plt.gca().grid(False) 
 
 cbar = plt.colorbar(im_diff, fraction=0.046, pad=0.04)
-cbar.set_ticks([diferencia.min(), diferencia.max()])
-cbar.set_ticklabels(['BOLSO', 'REMERA']) 
+cbar.set_ticks([diferencia.min(),diferencia.max()])
+cbar.set_ticklabels(['REMERA','BOLSO']) 
 cbar.ax.tick_params(labelsize=10)
 
 
