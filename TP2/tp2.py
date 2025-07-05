@@ -33,32 +33,7 @@ import random
 carpetaOriginal = os.path.dirname(os.path.abspath(__file__))
 ruta_moda = os.path.join(carpetaOriginal, "Fashion-MNIST.csv", ) 
 fashion = pd.read_csv(ruta_moda, index_col=0)
-#%% ===============================================================================================
-# FUNCIONES DEFINIDAS
-# =================================================================================================
-# Creamos una función para probar distintos árboles de decisión en la clasificación multiclase, 
-# variando su profundidad máxima y analizando su exactitud
 
-def resultado() -> dict():
-    res = {}
-    
-    for profundidad in range(1, 11): #profundidades entre 1 y 10
-     tree = DecisionTreeClassifier(
-        max_depth = profundidad,
-        random_state=42
-     )
-     tree.fit(X_dev, Y_dev)
-    
-     y_predict = tree.predict(X_dev)
-     score = accuracy_score(Y_dev, y_predict) * 100
-    
-     res[profundidad] = score
-     print(f'Profundidad: {profundidad}, Exactitud: {score:.2f}%') # print para observar el avance
-     
-     train_acc = tree.score(X_dev, Y_dev)
-
-     train_scores.append(train_acc)
-    return res 
 #%% ===============================================================================================
 # SEPARACIÓN DE VARIABLES 
 # =================================================================================================
@@ -215,11 +190,11 @@ diferencia = (remeras_promedio - bolsos_promedio).values.reshape(28, 28)
 flat = diferencia.flatten()
 indices_ordenados = np.argsort(flat)
 
-# Más azules (valores mínimos)
+# Más azules (valores mínimos): más cercanos a clase BOLSO 
 indices_mas_azules = indices_ordenados[:10] #quiero seleccionar los primeros 2 más azules
 coordenadas_azules = [divmod(idx, 28) for idx in indices_mas_azules] #para la cuenta recuerdo que hice la transformación, por eso el divmod
 
-# Más rojos (valores máximos)
+# Más rojos (valores máximos): más cercanos a clase REMERA
 indices_mas_rojos = indices_ordenados[-10:] #los últimos dos corresponden a los dos más rojos
 coordenadas_rojos = [divmod(idx, 28) for idx in indices_mas_rojos]
 
@@ -252,16 +227,19 @@ print("combo 2", combo2)
 
 num = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
 a = num
+num2 = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
+b = num2
+num3 = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
+c = num3
 
-
-combinaciones = { 'combo 1 (554, 63, nro random)': [a, combo1[0], combo1[3]],
-                 'combo 2 (65, 554)': [combo1[3], combo1[0]], 
-                 'combo 3 (65, 526)': [combo1[3], combo1[1], 544] + combo2,
-                 'combo 4 (todos)': combo1 + [544]
+combinaciones = { 'combo 1 (conjunto 2 & 3 random)': combo2 + [a,b,c], 
+                 'combo 2 (conjunto 2)': combo2, 
+                 'combo 3 (conjunto 2 & 2 random)': combo2 + [a,b],
+                 'combo 4 (conjunto1)': combo1 
                 }
 combinaciones_lista = list(combinaciones.values())
 
-print(a)
+print(a,b,c) # 187 758 189 
 #%%
 
 valores_k = range(1, 20)
@@ -309,26 +287,16 @@ mejores_k_ordenados = mejores_k_por_combinacion.sort_values('accuracy', ascendin
 
 
 #%%
+
 columnas_visualizacion = ['combinacion', 'atributos', 'k', 'accuracy', 'precision', 'recall', 'f1']
 resultados_finales = mejores_k_ordenados[columnas_visualizacion].copy()
 
-for col in ['accuracy', 'precision', 'recall', 'f1']:
-    resultados_finales[col] = resultados_finales[col].apply(lambda x: f"{x:.2f}%")
-
-print(resultados_finales.to_string(
-    index=False,
-    justify='center',
-    formatters={
-        'combinacion': lambda x: f"{x:<25}"
-    }
-))
-print("\n")
-print("Número random:", a)
+print("\nNúmero random:", a)
 
 #%% Gráfico exactitud por k segun mejores combos 
 
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(12, 7))
 sns.lineplot(
     data=df_resultados,
     x='k',
@@ -337,12 +305,19 @@ sns.lineplot(
     marker='o',
     linewidth=2
 )
-plt.title('Exactitud según k para cada combinación de píxeles')
-plt.xlabel('Vecinos más cercanos (k)')
-plt.ylabel('Exactitud (%)')
+plt.title('Exactitud según k para cada combinación de píxeles',fontsize=18)
+plt.xlabel('Vecinos más cercanos (k)',fontsize=16)
+plt.ylabel('Exactitud (%)', fontsize=16)
 plt.xticks(valores_k)
 plt.grid(True)
-plt.legend(bbox_to_anchor=(1.05, 1))
+
+plt.legend(
+    loc='lower right',         
+    fontsize=14,               
+    framealpha=1,                           
+    facecolor='white',         
+)
+
 plt.tight_layout()
 plt.show()
 
