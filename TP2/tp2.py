@@ -47,16 +47,13 @@ def resultado() -> dict():
         max_depth = profundidad,
         random_state=42
      )
-     tree.fit(X_dev, Y_dev)
-    
-     y_predict = tree.predict(X_heldout)
-     score = accuracy_score(Y_heldout, y_predict) * 100
-    
-     res[profundidad] = score
-     print(f'Profundidad: {profundidad}, Exactitud: {score:.2f}%') # print para observar el avance
-     
-     test_acc = tree.score(X_heldout, Y_heldout)
-     test_scores.append(test_acc)
+    tree.fit(X_train, Y_train)
+
+    y_predict = tree.predict(X_test)
+    score = accuracy_score(Y_test, y_predict) * 100
+
+    res[profundidad] = score
+    print(f'Profundidad: {profundidad}, Exactitud en test (de dev): {score:.2f}%')
      
     return res 
 #%% ===============================================================================================
@@ -543,8 +540,7 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 
 #%% Ajustamos un modelo de arbol de decisión y lo entrenamos con distintas profundidades del 1 al 10
 
-test_scores = []
-resultados = resultado() #acá utilizamos la función definida al comienzo del archivo
+resultados = resultado(X_train, Y_train, X_test, Y_test)
 
 #%% Gráfico Rendimiento vs Profundidad del Árbol
 
