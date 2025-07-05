@@ -60,14 +60,6 @@ def resultado() -> dict():
      
     return res 
 #%% ===============================================================================================
-# SEPARACIÓN DE VARIABLES 
-# =================================================================================================
-# X variable explicativa: para las imagenes, esto es, los valores de sus pixeles
-# Y variable a explicar: para las clases (el tipo de prenda al cual pertenece)
-X = fashion.drop('label', axis=1)
-Y = fashion['label']
-
-#%% ===============================================================================================
 # EXPLORACIÓN DE DATOS 
 # =================================================================================================
 """
@@ -113,7 +105,7 @@ for i in range(10):
     
     if np.sum(label) > 0:
         img = np.mean(X[label], axis=0).to_numpy().reshape(28, 28)
-        im = plt.imshow(img, cmap='Greys')
+        im = plt.imshow(img, cmap='Reds')
         plt.title(clases[i], fontsize=20) 
         plt.axis('off')
        
@@ -137,7 +129,7 @@ for i in range(10):
     label = (Y == i)
     if np.sum(label) > 0:
         img = np.std(X[label], axis=0).to_numpy().reshape(28, 28)
-        im = plt.imshow(img, cmap='Greys')
+        im = plt.imshow(img, cmap='Blues')
         plt.title(clases[i], fontsize=20) 
         plt.axis('off')
 
@@ -237,41 +229,53 @@ print("Pixeles más rojos:", indices_mas_rojos, "\n", "· Coordenadas:",  coorde
 # coordenadas: sus coordenadas dentro de la matriz 
 
 #%%
-combo1 = []
+conjunto1 = []
 for i in range(2):
-    combo1.append(int(indices_mas_azules[i]))
+    conjunto1.append(int(indices_mas_azules[i]))
 for j in range(2):
-    combo1.append(int(indices_mas_rojos[j]))
+    conjunto1.append(int(indices_mas_rojos[j]))
     # creo el primer combo con los mejores 4 píxeles
-print("combo 1", combo1)   
+print("combo 1", conjunto1)   
 
-combo2 = []
+conjunto2 = []
 for i in range(len(indices_mas_azules)):
-    combo2.append(int(indices_mas_azules[i]))
+    conjunto2.append(int(indices_mas_azules[i]))
 for j in range(len(indices_mas_rojos)):
-    combo2.append(int(indices_mas_rojos[j]))
+    conjunto2.append(int(indices_mas_rojos[j]))
     # creo el segundo combo con más píxeles 
-print("combo 2", combo2)   
-
-#%%
+print("combo 2", conjunto2)   
 
 # números random 
-num = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
+num = int(indices_ordenados[random.randint(0,len(indices_ordenados)-1)])
 a = num
-num2 = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
+num2 = int(indices_ordenados[random.randint(0,len(indices_ordenados)-1)])
 b = num2
-num3 = indices_ordenados[random.randint(0,len(indices_ordenados)-1)]
+num3 = int(indices_ordenados[random.randint(0,len(indices_ordenados)-1)])
 c = num3
 
+# conjunto random de 10 píxeles: 
+conjunto3 = []
+for i in range(8):
+    p = int(indices_ordenados[random.randint(0,len(indices_ordenados)-1)])
+    conjunto3.append(p)
+
+print("combo3",conjunto3)    
+
 # creamos combinaciones junto con los dos conjuntos y números random 
-combinaciones = { 'combo 1 (conjunto 2 & 3 random)': combo2 + [a,b,c], 
-                 'combo 2 (conjunto 2)': combo2, 
-                 'combo 3 (conjunto 2 & 2 random)': combo2 + [a,b],
-                 'combo 4 (conjunto1)': combo1 
-                }
+combinaciones = { 'conjunto 1': conjunto1, 
+                 'conjunto 2': conjunto2, 
+                 'conjunto 2 & 3 random': conjunto2 + [a,b,c],
+                 'conjunto 3': [594, 48, 354, 271, 99, 61, 233, 660]
+                } # en conjunto 3 fijamos una lista específica, la cual utilizamos en el informe
 combinaciones_lista = list(combinaciones.values())
 
-print(a,b,c) 
+print("numeros random",a,b,c) 
+
+combinaciones2 = { 'conjunto 2': conjunto2,
+                  'conjunto 2 & nro random': conjunto2 + [a,b,c],
+                  'conjunto unión': conjunto2 + [594, 48, 354, 271, 99, 61, 233, 660]
+    }
+combinaciones_lista2 = list(combinaciones2.values())
 #%%
 
 valores_k = range(1, 20)
@@ -284,7 +288,7 @@ y_test = subconjunto_0_8_TEST["label"].values
 i = -1
 
 # Evaluación 
-for nombre, atributos in combinaciones.items():
+for nombre, atributos in combinaciones2.items():
     i+=1
     X_train = subconjunto_0_8_TRAIN.iloc[:, atributos].values
     X_test = subconjunto_0_8_TEST.iloc[:, atributos].values
@@ -298,9 +302,9 @@ for nombre, atributos in combinaciones.items():
 
         resultados.append({
             "combinacion": nombre,
-            "atributos": combinaciones_lista[i],
+            "atributos": combinaciones_lista2[i],
             "k": k,
-            "accuracy": acc,
+            "accuracy": acc * 100,
             "precision": report['macro avg']['precision'] * 100,
             "recall": report['macro avg']['recall'] * 100,
             "f1": report['macro avg']['f1-score'] * 100
@@ -312,18 +316,13 @@ for nombre, atributos in combinaciones.items():
 df_resultados = pd.DataFrame(resultados)
 print(df_resultados)
 
-#%%
-# Encontrar el mejor k por combinación basado en accuracy
+#%% MEJORES K PARA CADA COMBINACIÓN 
 mejores_k_por_combinacion = df_resultados.loc[df_resultados.groupby('combinacion')['accuracy'].idxmax()]
 mejores_k_ordenados = mejores_k_por_combinacion.sort_values('accuracy', ascending=False)
 
-
-#%% VISUALIZACIÓN DE MEJORES RESULTADOS Y SUS MÉTRICAS (desordenado)
-
-columnas_visualizacion = ['combinacion', 'atributos', 'k', 'accuracy', 'precision', 'recall', 'f1']
-resultados_finales = mejores_k_ordenados[columnas_visualizacion].copy()
-
-print("\nNúmero random:", a, b, c) 
+print(mejores_k_ordenados)
+#%% Números random utilizados en combo 3 
+print("\nNumeros random:", a, b, c) 
 
 #%% Gráfico exactitud por k segun mejores combos 
 
@@ -355,9 +354,9 @@ plt.show()
 
 #%% Matriz de Confusión de los mejores 4 casos
 
-combos_seleccionados = resultados_finales['atributos'].tolist()
-k_seleccionadas = resultados_finales['k'].tolist()
-
+combos_seleccionados = mejores_k_ordenados['atributos'].tolist()
+titulos_matrices = mejores_k_ordenados['combinacion'].tolist()
+k_seleccionadas = mejores_k_ordenados['k'].tolist()
 
 for i in range(len(combos_seleccionados)): 
     pixeles_seleccionados = combos_seleccionados[i]
@@ -386,6 +385,7 @@ for i in range(len(combos_seleccionados)):
 
     dispKNN.ax_.set_xlabel("Predicted", fontsize = 12) 
     dispKNN.ax_.set_ylabel("Actual", fontsize = 12) 
+    dispKNN.ax_.set_title(titulos_matrices[i], fontsize = 12) 
 
     plt.tight_layout()
     plt.show()
@@ -413,11 +413,7 @@ remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :78
 bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
 diferencia = (bolsos-remeras).values.reshape(28, 28)
 im_diff = plt.imshow(diferencia, cmap='RdBu')
-for (fila, columna) in coordenadas_rojos:
-    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2)  
-for (fila, columna) in coordenadas_azules:
-    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2) 
-plt.gca().grid(False) 
+
 
 cbar = plt.colorbar(im_diff, fraction=0.046, pad=0.04)
 cbar.set_ticks([diferencia.min(),diferencia.max()])
@@ -425,6 +421,67 @@ cbar.set_ticklabels(['REMERA','BOLSO'])
 cbar.ax.tick_params(labelsize=10)
 
 
+plt.subplots_adjust(wspace=0.3, right=0.85) 
+
+plt.show()
+
+#%% VISUALIZACIÓN DE POSICIÓN DE LOS PÍXELES QUE USAREMOS EN CADA CONJUNTO 
+
+#paso 1: armo coordenadas con los pixeles 
+coordenadas_conj3 = [divmod(idx, 28) for idx in conjunto3]
+coordenadas_conj2 = [divmod(idx, 28) for idx in conjunto2]    
+coordenadas_conj1 = [divmod(idx, 28) for idx in conjunto1]
+
+# Conjunto 1 
+plt.figure(figsize=(15, 5))  
+plt.subplot(1,3,1)
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+diferencia = (bolsos-remeras).values.reshape(28, 28)
+im_diff = plt.imshow(diferencia, cmap='RdBu')
+plt.title("Posición de píxeles conjunto 1")
+for (fila, columna) in coordenadas_conj1:
+    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2) 
+plt.gca().grid(False) 
+
+cbar = plt.colorbar(im_diff, fraction=0.046, pad=0.04)
+cbar.set_ticks([diferencia.min(),diferencia.max()])
+cbar.set_ticklabels(['REMERA','BOLSO']) 
+cbar.ax.tick_params(labelsize=10)
+plt.subplots_adjust(wspace=0.3, right=0.85) 
+
+# Conjunto 2
+plt.subplot(1,3,2)
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+diferencia = (bolsos-remeras).values.reshape(28, 28)
+im_diff = plt.imshow(diferencia, cmap='RdBu')
+plt.title("Posición de píxeles conjunto 2")
+for (fila, columna) in coordenadas_conj2:
+    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2) 
+plt.gca().grid(False) 
+
+cbar = plt.colorbar(im_diff, fraction=0.046, pad=0.04)
+cbar.set_ticks([diferencia.min(),diferencia.max()])
+cbar.set_ticklabels(['REMERA','BOLSO']) 
+cbar.ax.tick_params(labelsize=10)
+plt.subplots_adjust(wspace=0.3, right=0.85) 
+
+# Conjunto 3 
+plt.subplot(1,3,3)
+remeras = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 0].iloc[:, :784].mean()
+bolsos = subconjunto_0_8_TRAIN[subconjunto_0_8_TRAIN["label"] == 8].iloc[:, :784].mean()
+diferencia = (bolsos-remeras).values.reshape(28, 28)
+im_diff = plt.imshow(diferencia, cmap='RdBu')
+plt.title("Posición de píxeles conjunto 3")
+for (fila, columna) in coordenadas_conj3:
+    plt.scatter(columna, fila, marker='x', color='black', s=100, linewidth=2) 
+plt.gca().grid(False) 
+
+cbar = plt.colorbar(im_diff, fraction=0.046, pad=0.04)
+cbar.set_ticks([diferencia.min(),diferencia.max()])
+cbar.set_ticklabels(['REMERA','BOLSO']) 
+cbar.ax.tick_params(labelsize=10)
 plt.subplots_adjust(wspace=0.3, right=0.85) 
 
 plt.show()
