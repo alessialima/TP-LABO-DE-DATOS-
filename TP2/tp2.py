@@ -580,7 +580,7 @@ tree = DecisionTreeClassifier(random_state=42)
 grid_search = GridSearchCV(
     estimator=tree,
     param_grid=param_grid,
-    cv=3,                  
+    cv=5,                  
     scoring='accuracy',
     n_jobs=-1,              
     verbose=1               # Mostrar progreso
