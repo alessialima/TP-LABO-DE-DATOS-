@@ -300,15 +300,21 @@ for nombre, atributos in combinaciones2.items():
     for k in valores_k:
         modelo = KNeighborsClassifier(n_neighbors=k)
         modelo.fit(X_train, y_train)
+        # NUEVO: predicción y accuracy en entrenamiento
+        y_train_pred = modelo.predict(X_train)  # NUEVO
+        train_acc = accuracy_score(y_train, y_train_pred)  # NUEVO
+        
+        # Predicción y accuracy en test
         y_pred = modelo.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
         report = classification_report(y_test, y_pred, output_dict=True)
-
+        
         resultados.append({
             "combinacion": nombre,
             "atributos": combinaciones_lista2[i],
             "k": k,
-            "accuracy": acc * 100,
+            "test_accuracy": acc * 100,
+            "train_accuracy": train_acc * 100,  # NUEVO
             "precision": report['macro avg']['precision'] * 100,
             "recall": report['macro avg']['recall'] * 100,
             "f1": report['macro avg']['f1-score'] * 100
@@ -321,8 +327,8 @@ df_resultados = pd.DataFrame(resultados)
 print(df_resultados)
 
 #%% MEJORES K PARA CADA COMBINACIÓN 
-mejores_k_por_combinacion = df_resultados.loc[df_resultados.groupby('combinacion')['accuracy'].idxmax()]
-mejores_k_ordenados = mejores_k_por_combinacion.sort_values('accuracy', ascending=False)
+mejores_k_por_combinacion = df_resultados.loc[df_resultados.groupby('combinacion')['test_accuracy'].idxmax()]
+mejores_k_ordenados = mejores_k_por_combinacion.sort_values('test_accuracy', ascending=False)
 
 print(mejores_k_ordenados)
 #%% Números random utilizados en combo 3 
@@ -335,7 +341,7 @@ plt.figure(figsize=(12, 7))
 sns.lineplot(
     data=df_resultados,
     x='k',
-    y='accuracy',
+    y='test_accuracy',
     hue='combinacion',
     marker='o',
     linewidth=2
@@ -353,6 +359,21 @@ plt.legend(
     facecolor='white',         
 )
 
+plt.tight_layout()
+plt.show()
+# Gráfico adicional: comparación de accuracy en train y test (para detectar sobreajuste)
+plt.figure(figsize=(12, 7))
+for nombre in df_resultados['combinacion'].unique():
+    subset = df_resultados[df_resultados['combinacion'] == nombre]
+    plt.plot(subset['k'], subset['train_accuracy'], label=f'{nombre} - Train', linestyle='--')
+    plt.plot(subset['k'], subset['test_accuracy'], label=f'{nombre} - Test', marker='o')
+
+plt.title('Accuracy en entrenamiento vs test según k', fontsize=18)
+plt.xlabel('Vecinos más cercanos (k)', fontsize=16)
+plt.ylabel('Accuracy (%)', fontsize=16)
+plt.grid(True)
+plt.xticks(valores_k)
+plt.legend(fontsize=14)
 plt.tight_layout()
 plt.show()
 
@@ -666,7 +687,6 @@ ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
 
 plt.tight_layout()
 plt.show()
-
 
 
 
