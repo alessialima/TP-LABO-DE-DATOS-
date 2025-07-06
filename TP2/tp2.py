@@ -47,13 +47,13 @@ def resultado() -> dict():
         max_depth = profundidad,
         random_state=42
      )
-    tree.fit(X_train, Y_train)
+     tree.fit(X_train, Y_train)
 
-    y_predict = tree.predict(X_test)
-    score = accuracy_score(Y_test, y_predict) * 100
+     y_predict = tree.predict(X_test)
+     score = accuracy_score(Y_test, y_predict) * 100
 
-    res[profundidad] = score
-    print(f'Profundidad: {profundidad}, Exactitud en test (de dev): {score:.2f}%')
+     res[profundidad] = score
+     print(f'Profundidad: {profundidad}, Exactitud en test (de dev): {score:.2f}%')
      
     return res 
 #%% ===============================================================================================
@@ -343,12 +343,12 @@ for nombre in combinaciones_lista:
     plt.plot(subset['k'], subset['train_accuracy'], label=f'{nombre} - Train', linestyle='--', color=colores[nombre])
     plt.plot(subset['k'], subset['test_accuracy'], label=f'{nombre} - Test', marker='o', color=colores[nombre])
 
-plt.title('Accuracy en entrenamiento vs test según k (conjuntos 1, 2 y 3)', fontsize=18)
-plt.xlabel('Vecinos más cercanos (k)', fontsize=16)
-plt.ylabel('Accuracy (%)', fontsize=16)
+plt.title('Accuracy en entrenamiento vs test según k (conjuntos 1, 2 y 3)', fontsize=20)
+plt.xlabel('Vecinos más cercanos (k)', fontsize=20)
+plt.ylabel('Accuracy (%)', fontsize=20)
 plt.xticks(valores_k)
 plt.grid(True)
-plt.legend(fontsize=14)
+plt.legend(fontsize=18)
 plt.tight_layout()
 plt.show()
 
@@ -359,12 +359,12 @@ for nombre in combinaciones_lista2:
     plt.plot(subset['k'], subset['train_accuracy'], label=f'{nombre} - Train', linestyle='--', color=colores[nombre])
     plt.plot(subset['k'], subset['test_accuracy'], label=f'{nombre} - Test', marker='o', color=colores[nombre])
 
-plt.title('Accuracy en entrenamiento vs test según k (conjuntos mejorados)', fontsize=18)
-plt.xlabel('Vecinos más cercanos (k)', fontsize=16)
-plt.ylabel('Accuracy (%)', fontsize=16)
+plt.title('Accuracy en entrenamiento vs test según k (conjuntos mejorados)', fontsize=20)
+plt.xlabel('Vecinos más cercanos (k)', fontsize=20)
+plt.ylabel('Accuracy (%)', fontsize=20)
 plt.xticks(valores_k)
 plt.grid(True)
-plt.legend(fontsize=14)
+plt.legend(fontsize=18)
 plt.tight_layout()
 plt.show()
 
@@ -529,7 +529,7 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 
 #%% Ajustamos un modelo de arbol de decisión y lo entrenamos con distintas profundidades del 1 al 10
 
-resultados = resultado(X_train, Y_train, X_test, Y_test)
+resultados = resultado()
 
 #%% Gráfico Rendimiento vs Profundidad del Árbol
 
