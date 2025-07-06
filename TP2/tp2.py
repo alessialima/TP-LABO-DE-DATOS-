@@ -57,6 +57,13 @@ def resultado() -> dict():
      
     return res 
 #%% ===============================================================================================
+# SEPARACIÓN DE VARIABLES 
+# =================================================================================================
+# X variable explicativa: para las imagenes, esto es, los valores de sus pixeles
+# Y variable a explicar: para las clases (el tipo de prenda al cual pertenece)
+X = fashion.drop('label', axis=1)
+Y = fashion['label']    
+#%% ===============================================================================================
 # EXPLORACIÓN DE DATOS 
 # =================================================================================================
 """
