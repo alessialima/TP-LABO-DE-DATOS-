@@ -1,2 +1,4 @@
 # TRABAJO PRÁCTICO 2 
-terminar clasificación multiclase 
+
+
+AGREGAR LOS NUEVOS IMPORT EN README.TXT !!!!!!!!!!!!!!!!!!!!!
