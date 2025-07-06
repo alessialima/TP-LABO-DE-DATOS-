@@ -123,8 +123,6 @@ plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
 
 plt.show()
 
-
-
 #%% Imágenes desviación estándar por clase
 # Para analizar la diferencia entre prendas de una misma clase, analizamos la desviación estándar de intesidad de píxeles de cada una de ellas 
 plt.figure(figsize=(15, 8))
@@ -133,7 +131,7 @@ for i in range(10):
     label = (Y == i)
     if np.sum(label) > 0:
         img = np.std(X[label], axis=0).to_numpy().reshape(28, 28)
-        im = plt.imshow(img, cmap='Blues')
+        im = plt.imshow(img, cmap='bwr')
         plt.title(clases[i], fontsize=20) 
         plt.axis('off')
 
@@ -166,7 +164,6 @@ plt.show()
 # CLASIFICACIÓN BINARIA
 # ¿La imagen corresponde a la clase 0 o a la clase 8? 
 # =================================================================================================
-
 
 #%% A partir del dataframe original, construimos uno nuevo que contenga sólo al subconjunto de imágenes que corresponden a la clase 0 y clase 8
 
@@ -249,6 +246,7 @@ for j in range(len(indices_mas_rojos)):
     # creo el segundo combo con más píxeles 
 print("combo 2", conjunto2)   
 
+random.seed(42)
 # números random 
 num = int(indices_ordenados[random.randint(0,len(indices_ordenados)-1)])
 a = num
@@ -259,6 +257,7 @@ c = num3
 
 # conjunto random de 10 píxeles: 
 conjunto3 = []
+random.seed(40)
 for i in range(8):
     p = int(indices_ordenados[random.randint(0,len(indices_ordenados)-1)])
     conjunto3.append(p)
@@ -268,19 +267,17 @@ print("combo3",conjunto3)
 # creamos combinaciones junto con los dos conjuntos y números random 
 combinaciones = { 'conjunto 1': conjunto1, 
                  'conjunto 2': conjunto2, 
-                 'conjunto 2 & 3 random': conjunto2 + [a,b,c],
-                 'conjunto 3': [594, 48, 354, 271, 99, 61, 233, 660]
-                } # en conjunto 3 fijamos una lista específica, la cual utilizamos en el informe
-combinaciones_lista = list(combinaciones.values())
+                 'conjunto 3': conjunto3
+                } 
+combinaciones_lista = list(combinaciones.keys())
 
 print("numeros random",a,b,c) 
 
-combinaciones2 = { 'conjunto 2': conjunto2,
-                  'conjunto 2 & nro random': conjunto2 + [a,b,c],
-                  'conjunto unión': conjunto2 + [594, 48, 354, 271, 99, 61, 233, 660]
+combinaciones2 = {'conjunto 2 & nro random': conjunto2 + [a,b,c],
+                  'conjunto unión': conjunto2 + conjunto3
     }
-combinaciones_lista2 = list(combinaciones2.values())
-#%%
+combinaciones_lista2 = list(combinaciones2.keys())
+#%% Evaluación / métricas 
 
 valores_k = range(1, 20)
 resultados = []
@@ -289,38 +286,34 @@ resultados = []
 y_train = subconjunto_0_8_TRAIN["label"].values
 y_test = subconjunto_0_8_TEST["label"].values
 
-i = -1
+todas_las_combinaciones = combinaciones | combinaciones2
+resultados = [] 
 
-# Evaluación 
-for nombre, atributos in combinaciones2.items():
-    i+=1
+for nombre, atributos in todas_las_combinaciones.items():
     X_train = subconjunto_0_8_TRAIN.iloc[:, atributos].values
     X_test = subconjunto_0_8_TEST.iloc[:, atributos].values
 
     for k in valores_k:
         modelo = KNeighborsClassifier(n_neighbors=k)
         modelo.fit(X_train, y_train)
-        # NUEVO: predicción y accuracy en entrenamiento
-        y_train_pred = modelo.predict(X_train)  # NUEVO
-        train_acc = accuracy_score(y_train, y_train_pred)  # NUEVO
-        
-        # Predicción y accuracy en test
+
+        y_train_pred = modelo.predict(X_train)
+        train_acc = accuracy_score(y_train, y_train_pred)
+
         y_pred = modelo.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
         report = classification_report(y_test, y_pred, output_dict=True)
-        
+
         resultados.append({
             "combinacion": nombre,
-            "atributos": combinaciones_lista2[i],
+            "atributos": atributos,
             "k": k,
             "test_accuracy": acc * 100,
-            "train_accuracy": train_acc * 100,  # NUEVO
+            "train_accuracy": train_acc * 100,
             "precision": report['macro avg']['precision'] * 100,
             "recall": report['macro avg']['recall'] * 100,
             "f1": report['macro avg']['f1-score'] * 100
         })
-
-
 
 # Resultados:
 df_resultados = pd.DataFrame(resultados)
@@ -335,53 +328,59 @@ print(mejores_k_ordenados)
 print("\nNumeros random:", a, b, c) 
 
 #%% Gráfico exactitud por k segun mejores combos 
+colores = {
+    'conjunto 1': 'tab:blue',
+    'conjunto 2': 'tab:orange',
+    'conjunto 3': 'tab:green',
+    'conjunto 2 & nro random': 'tab:red',
+    'conjunto unión': 'tab:purple'
+}
 
-
+# GRUPO BÁSICO
 plt.figure(figsize=(12, 7))
-sns.lineplot(
-    data=df_resultados,
-    x='k',
-    y='test_accuracy',
-    hue='combinacion',
-    marker='o',
-    linewidth=2
-)
-plt.title('Exactitud según k para cada combinación de píxeles',fontsize=18)
-plt.xlabel('Vecinos más cercanos (k)',fontsize=16)
-plt.ylabel('Exactitud (%)', fontsize=16)
-plt.xticks(valores_k)
-plt.grid(True)
-
-plt.legend(
-    loc='lower right',         
-    fontsize=14,               
-    framealpha=1,                           
-    facecolor='white',         
-)
-
-plt.tight_layout()
-plt.show()
-# Gráfico adicional: comparación de accuracy en train y test (para detectar sobreajuste)
-plt.figure(figsize=(12, 7))
-for nombre in df_resultados['combinacion'].unique():
+for nombre in combinaciones_lista:
     subset = df_resultados[df_resultados['combinacion'] == nombre]
-    plt.plot(subset['k'], subset['train_accuracy'], label=f'{nombre} - Train', linestyle='--')
-    plt.plot(subset['k'], subset['test_accuracy'], label=f'{nombre} - Test', marker='o')
+    plt.plot(subset['k'], subset['train_accuracy'], label=f'{nombre} - Train', linestyle='--', color=colores[nombre])
+    plt.plot(subset['k'], subset['test_accuracy'], label=f'{nombre} - Test', marker='o', color=colores[nombre])
 
-plt.title('Accuracy en entrenamiento vs test según k', fontsize=18)
+plt.title('Accuracy en entrenamiento vs test según k (conjuntos 1, 2 y 3)', fontsize=18)
 plt.xlabel('Vecinos más cercanos (k)', fontsize=16)
 plt.ylabel('Accuracy (%)', fontsize=16)
-plt.grid(True)
 plt.xticks(valores_k)
+plt.grid(True)
+plt.legend(fontsize=14)
+plt.tight_layout()
+plt.show()
+
+# GRUPO mezclas
+plt.figure(figsize=(12, 7))
+for nombre in combinaciones_lista2:
+    subset = df_resultados[df_resultados['combinacion'] == nombre]
+    plt.plot(subset['k'], subset['train_accuracy'], label=f'{nombre} - Train', linestyle='--', color=colores[nombre])
+    plt.plot(subset['k'], subset['test_accuracy'], label=f'{nombre} - Test', marker='o', color=colores[nombre])
+
+plt.title('Accuracy en entrenamiento vs test según k (conjuntos mejorados)', fontsize=18)
+plt.xlabel('Vecinos más cercanos (k)', fontsize=16)
+plt.ylabel('Accuracy (%)', fontsize=16)
+plt.xticks(valores_k)
+plt.grid(True)
 plt.legend(fontsize=14)
 plt.tight_layout()
 plt.show()
 
 #%% Matriz de Confusión de los mejores 4 casos
 
-combos_seleccionados = mejores_k_ordenados['atributos'].tolist()
-titulos_matrices = mejores_k_ordenados['combinacion'].tolist()
-k_seleccionadas = mejores_k_ordenados['k'].tolist()
+# Filtramos valores de k entre 4 y 20, evitando sobreajuste 
+k_validos = list(range(4, 20))
+df_filtrado = df_resultados[df_resultados['k'].isin(k_validos)]
+
+# Los mejores dentro de ese rango
+mejores_k_restringidos = df_filtrado.loc[df_filtrado.groupby('combinacion')['test_accuracy'].idxmax()]
+mejores_k_restringidos = mejores_k_restringidos.sort_values('test_accuracy', ascending=False)
+
+combos_seleccionados = mejores_k_restringidos['atributos'].tolist()
+titulos_matrices = mejores_k_restringidos['combinacion'].tolist()
+k_seleccionadas = mejores_k_restringidos['k'].tolist()
 
 for i in range(len(combos_seleccionados)): 
     pixeles_seleccionados = combos_seleccionados[i]
@@ -509,44 +508,6 @@ cbar.set_ticklabels(['REMERA','BOLSO'])
 cbar.ax.tick_params(labelsize=10)
 plt.subplots_adjust(wspace=0.3, right=0.85) 
 
-plt.show()
-
-#%% Gráfico que visualiza sólo la diferencia de promedios de clase 
-plt.imshow(diferencia, cmap='bwr', vmin=-150, vmax=150)
-plt.colorbar()
-plt.title("Diferencia promedio (remera - bolso)")
-ticks = np.arange(0, 28, 2)
-plt.xticks(ticks, ticks, rotation=45, fontsize=8)
-plt.yticks(ticks, ticks, fontsize=8)
-plt.gca().grid(False) 
-
-plt.tight_layout()
-plt.show()
-#%% Gráficos: desviación de pantalón, diferencia promedio pantalón y zapatilla, desviación de camisa
-plt.figure(figsize=(15, 5))    
-plt.subplot(1, 3, 1)
-label0 = (Y == 1)
-img0 = np.std(X[label0], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img0, cmap='bwr')
-plt.colorbar(fraction=0.046, pad=0.04)
-plt.gca().grid(False) 
-
-plt.subplot(1, 3, 3)
-label8 = (Y == 6)
-img8 = np.std(X[label8], axis=0).to_numpy().reshape(28, 28)
-plt.imshow(img8, cmap='bwr')
-plt.colorbar(fraction=0.046, pad=0.04)
-plt.gca().grid(False) 
-
-plt.subplot(1,3,2)
-zapatilla = fashion[fashion["label"] == 7].iloc[:, :784].mean()
-pantalones = fashion[fashion["label"] == 1].iloc[:, :784].mean()
-diferencia = (zapatilla - pantalones).values.reshape(28, 28)
-plt.imshow(diferencia, cmap='bwr')
-plt.colorbar(fraction=0.046, pad=0.04)
-plt.gca().grid(False) 
-
-plt.subplots_adjust(wspace=0.3, right=0.85)  
 plt.show()
 
 #%% ===============================================================================================
@@ -686,6 +647,44 @@ ax.grid(axis='y', linestyle='--', alpha=0.8)
 ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
 
 plt.tight_layout()
+plt.show()
+
+#%% Gráfico que visualiza sólo la diferencia de promedios de clase 
+plt.imshow(diferencia, cmap='bwr', vmin=-150, vmax=150)
+plt.colorbar()
+plt.title("Diferencia promedio (remera - bolso)")
+ticks = np.arange(0, 28, 2)
+plt.xticks(ticks, ticks, rotation=45, fontsize=8)
+plt.yticks(ticks, ticks, fontsize=8)
+plt.gca().grid(False) 
+
+plt.tight_layout()
+plt.show()
+#%% Gráficos: desviación de pantalón, diferencia promedio pantalón y zapatilla, desviación de camisa
+plt.figure(figsize=(15, 5))    
+plt.subplot(1, 3, 1)
+label0 = (Y == 1)
+img0 = np.std(X[label0], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img0, cmap='bwr')
+plt.colorbar(fraction=0.046, pad=0.04)
+plt.gca().grid(False) 
+
+plt.subplot(1, 3, 3)
+label8 = (Y == 6)
+img8 = np.std(X[label8], axis=0).to_numpy().reshape(28, 28)
+plt.imshow(img8, cmap='bwr')
+plt.colorbar(fraction=0.046, pad=0.04)
+plt.gca().grid(False) 
+
+plt.subplot(1,3,2)
+zapatilla = fashion[fashion["label"] == 7].iloc[:, :784].mean()
+pantalones = fashion[fashion["label"] == 1].iloc[:, :784].mean()
+diferencia = (zapatilla - pantalones).values.reshape(28, 28)
+plt.imshow(diferencia, cmap='bwr')
+plt.colorbar(fraction=0.046, pad=0.04)
+plt.gca().grid(False) 
+
+plt.subplots_adjust(wspace=0.3, right=0.85)  
 plt.show()
 
 
