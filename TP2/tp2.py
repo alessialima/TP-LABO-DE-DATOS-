@@ -781,21 +781,29 @@ for split, acc in metrics.items():
 
 #%% Matriz de confusión
 cm = confusion_matrix(Y_heldout, y_pred_hold)
-fig, ax = plt.subplots(figsize=(12, 10))
-disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-                              display_labels=clases)
+
+# Generar figura más compacta
+fig, ax = plt.subplots(figsize=(8, 6))
+
+# Mostrar matriz con etiquetas personalizadas
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=clases)
 disp.plot(ax=ax, cmap='Blues', values_format='d', xticks_rotation=45)
 
-# Ajustar tamaño de fuente dentro de cada celda
+# Ajustar texto dentro de las celdas
 for text in disp.text_.ravel():
     text.set_fontsize(8)
 
-ax.set_xlabel("Etiqueta Predicha", fontsize=12)
-ax.set_ylabel("Etiqueta Verdadera", fontsize=12)
-ax.set_title("Matriz de Confusión (Conjunto Held‑out)", fontsize=14)
+# Etiquetas y título
+ax.set_xlabel("Etiqueta Predicha", fontsize=11)
+ax.set_ylabel("Etiqueta Verdadera", fontsize=11)
+ax.set_title("Matriz de Confusión (Held-out)", fontsize=13)
+
+# Ajuste del tamaño de los ticks
+ax.tick_params(axis='x', labelsize=9)
+ax.tick_params(axis='y', labelsize=9)
+
 plt.tight_layout()
 plt.show()
-
 #%%
 # Reporte detallado: precision, recall y F1
 print("\nReporte de clasificación (held‑out):")
