@@ -618,7 +618,7 @@ for split, acc in metrics.items():
 cm = confusion_matrix(Y_heldout, y_pred_hold)
 
 # Generar figura más compacta
-fig, ax = plt.subplots(figsize=(8, 6))
+fig, ax = plt.subplots(figsize=(7, 6))
 
 # Mostrar matriz con etiquetas personalizadas
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=clases)
@@ -638,6 +638,7 @@ ax.tick_params(axis='x', labelsize=9)
 ax.tick_params(axis='y', labelsize=9)
 
 plt.tight_layout()
+plt.gca().grid(False) 
 plt.show()
 
 #%%
