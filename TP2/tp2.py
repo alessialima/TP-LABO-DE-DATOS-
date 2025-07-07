@@ -414,7 +414,7 @@ for i in range(len(combos_seleccionados)):
 
     dispKNN.ax_.set_xlabel("Predicted", fontsize = 12) 
     dispKNN.ax_.set_ylabel("Actual", fontsize = 12) 
-    dispKNN.ax_.set_title(titulos_matrices[i], fontsize = 12) 
+    dispKNN.ax_.set_title(titulos_matrices[i] + ' con k = ' + str(k_seleccionadas[i]), fontsize = 12) 
 
     plt.tight_layout()
     plt.show()
