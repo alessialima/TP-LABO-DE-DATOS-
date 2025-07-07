@@ -610,10 +610,13 @@ best_tree = grid_search.best_estimator_
 
 metrics = {}
 
-# DEV
-y_pred_train = best_tree.predict(X_dev)
-metrics['dev_acc'] = accuracy_score(Y_dev, y_pred_train)
+# TRAIN
+y_pred_train = best_tree.predict(X_train)
+metrics['train_acc'] = accuracy_score(Y_train, y_pred_train)
 
+# TEST 
+y_pred_test = best_tree.predict(X_test)
+metrics['test_acc'] = accuracy_score(Y_test, y_pred_test)
 
 # HELDOUT
 y_pred_hold = best_tree.predict(X_heldout)
