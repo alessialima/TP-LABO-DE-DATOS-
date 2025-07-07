@@ -108,44 +108,56 @@ plt.show()
 #%% Imágenes promedio por clase
 # Para buscar un patrón que describa cada clase, realizamos un promedio de intensidad de píxeles de cada una de ellas
 plt.figure(figsize=(15, 8))
+
+# Busco valor mínimo y máximo de todas las clases 
+all_means = [np.mean(X[Y == i], axis=0).to_numpy() for i in range(10) if np.sum(Y == i) > 0]
+vmin, vmax = np.min(all_means), np.max(all_means)
+
 for i in range(10):
     plt.subplot(2, 5, i+1)
     label = (Y == i)
     
     if np.sum(label) > 0:
         img = np.mean(X[label], axis=0).to_numpy().reshape(28, 28)
-        im = plt.imshow(img, cmap='Reds')
-        plt.title(clases[i], fontsize=20) 
+        im = plt.imshow(img, cmap='Reds', vmin=vmin, vmax=vmax)  # Misma escala para todos
+        plt.title(clases[i], fontsize=20)
         plt.axis('off')
-       
 
-plt.subplots_adjust(wspace=0.08, hspace=0.08)  
+plt.subplots_adjust(wspace=0.08, hspace=0.08, right=0.9) 
+
+# Colorbar 
 cax = plt.axes([0.92, 0.15, 0.02, 0.7])
-cbar = plt.colorbar(im, cax=cax)
-cbar.ax.tick_params(labelsize=18)
+plt.colorbar(im, cax=cax)
+cax.tick_params(labelsize=18)
 
 plt.suptitle('Imágenes Promedio por Clase', fontsize=28, y=0.95)
-
 plt.show()
 
 #%% Imágenes desviación estándar por clase
 # Para analizar la diferencia entre prendas de una misma clase, analizamos la desviación estándar de intesidad de píxeles de cada una de ellas 
 plt.figure(figsize=(15, 8))
+
+# Calculamos el rango global de desviaciones estándar 
+all_stds = [np.std(X[Y == i], axis=0).to_numpy() for i in range(10) if np.sum(Y == i) > 0]
+vmin, vmax = np.min(all_stds), np.max(all_stds)
+
 for i in range(10):
     plt.subplot(2, 5, i+1)
     label = (Y == i)
     if np.sum(label) > 0:
         img = np.std(X[label], axis=0).to_numpy().reshape(28, 28)
-        im = plt.imshow(img, cmap='bwr')
+        im = plt.imshow(img, cmap='bwr', vmin=vmin, vmax=vmax) 
         plt.title(clases[i], fontsize=20) 
         plt.axis('off')
 
-plt.subplots_adjust(wspace=0.08, hspace=0.08)  
+plt.subplots_adjust(wspace=0.08, hspace=0.08, right=0.9)  
+
+# Colorbar 
 cax = plt.axes([0.92, 0.15, 0.02, 0.7])
 cbar = plt.colorbar(im, cax=cax)
 cbar.ax.tick_params(labelsize=18)
 
-plt.suptitle('Imágenes Desviación Estándar por Clase', fontsize=28, y=0.95)
+plt.suptitle('Desviación Estándar por Clase', fontsize=28, y=0.95)
 plt.show()
 
 #%% Diferencia Promedio por Clases 
@@ -373,7 +385,7 @@ plt.legend(fontsize=18)
 plt.tight_layout()
 plt.show()
 
-#%% Matriz de Confusión de los mejores 4 casos
+#%% Matriz de Confusión de los mejores 5 casos
 
 # Filtramos valores de k entre 4 y 20, evitando sobreajuste 
 k_validos = list(range(4, 20))
@@ -544,18 +556,16 @@ train_scores, test_scores = resultados_train_test(
 
 #%%
 
-# ================================================================
-# Gráfico comparativo
-# ================================================================
+#%% Gráfico comparando caso train vs test, exactitud en función de profundidad 
 profundidades = list(range(1, 11))
 
 plt.figure(figsize=(9, 5))
 plt.plot(profundidades, train_scores, 'o-', label='Train', linewidth=2, markersize=7)
 plt.plot(profundidades, test_scores,  's-', label='Test',  linewidth=2, markersize=7)
 
-plt.xlabel('Profundidad del Árbol', fontsize=12)
-plt.ylabel('Exactitud (%)', fontsize=12)
-plt.title('Exactitud en Train vs Test según la Profundidad', fontsize=13)
+plt.xlabel('Profundidad del Árbol', fontsize=16)
+plt.ylabel('Exactitud (%)', fontsize=16)
+plt.title('Exactitud en Train vs Test según la Profundidad', fontsize=18)
 plt.xticks(profundidades)
 plt.grid(True, linestyle='--', alpha=0.4)
 plt.legend()
@@ -568,14 +578,14 @@ param_grid = {
     'max_depth': [5, 7, 10],          
     'min_samples_split': [5, 10, 15],   
     'min_samples_leaf': [2, 4],     
-    'max_features': [None, 'sqrt', 'log2', 0.5]   
+    'max_features': ['sqrt', 'log2', 0.5]    # sacamos la opción None de acá para que aparezca como mejor resultado nuestro mf seleccionado 
 }
 
 tree = DecisionTreeClassifier(random_state=42)
 grid_search = GridSearchCV(
     estimator=tree,
     param_grid=param_grid,
-    cv=5,                      # 5-fold cross-validation
+    cv=5,                     
     scoring='accuracy',
     n_jobs=-1,        
     verbose=1              
@@ -589,22 +599,21 @@ best_params = grid_search.best_params_
 best_score = grid_search.best_score_
 print(f"\nMejores parámetros: {best_params}")
 print(f"Mejor accuracy en validación cruzada: {best_score:.4f}")
+# Elegimos como mejor caso profundidad 10, mf: 0.5, mss: 10, msl: 4
+
 #%%
 
-# ------------------------------------------------------------------
-# EVALUAR SOBRE LOS DISTINTOS CONJUNTOS
-# ------------------------------------------------------------------
+#%% Evaluamos sobre los distintos conjuntos para comprobar que no haya sobreajuste
+# Como quitamos la opción None, este código nos devolverá la exactitud en dev y held-out del caso con profundidad 10, mf: 0.5, mss: 10, msl: 4
+
 best_tree = grid_search.best_estimator_
 
 metrics = {}
 
-# TRAIN
-y_pred_train = best_tree.predict(X_train)
-metrics['train_acc'] = accuracy_score(Y_train, y_pred_train)
+# DEV
+y_pred_train = best_tree.predict(X_dev)
+metrics['dev_acc'] = accuracy_score(Y_dev, y_pred_train)
 
-# TEST 
-y_pred_test = best_tree.predict(X_test)
-metrics['test_acc'] = accuracy_score(Y_test, y_pred_test)
 
 # HELDOUT
 y_pred_hold = best_tree.predict(X_heldout)
@@ -614,11 +623,52 @@ print("\n====== Exactitud ======")
 for split, acc in metrics.items():
     print(f"{split:10s}: {acc*100:.2f}%")
 
-#%% Matriz de confusión
+#%% Gráfico de variación de cada mf en el caso más óptimo de las profundidades elegidas. Considera únicamente el mejor mss y msl en cada punto
+# Armo un dataframe con los resultados para cada mf distinto 
+results_df = pd.DataFrame(grid_search.cv_results_)
+results_df['param_max_features'] = (
+    results_df['param_max_features']
+    .replace({None: "None", 0.5: "50%"})
+)
+# Gráfico para cada mf, exactitud en función de profundidad 
+plt.figure(figsize=(10, 6))
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']  # Colores 
+
+# Graficamos para cada valor de max_features
+for i, mf in enumerate(results_df['param_max_features'].unique()):
+    # Filtramos los datos para este max_features específico
+    mf_data = results_df[results_df['param_max_features'] == mf]
+    
+    # Agrupamos por profundidad y obtenemos el mejor accuracy 
+    grouped = mf_data.groupby('param_max_depth')['mean_test_score'].max()
+    
+    
+    plt.plot(grouped.index, grouped.values, 
+             color=colors[i],
+             marker='o',
+             linestyle='-',
+             linewidth=2,
+             markersize=8,
+             label=f'max_features={mf}')
+   
+# Personalizamos el gráfico
+plt.title('Exactitud vs. Profundidad para diferentes mf', fontsize=20, pad=20)
+plt.xlabel('Profundidad máxima del árbol (max_depth)', fontsize=18)
+plt.ylabel('Exactitud (%)', fontsize=18)
+plt.xticks(param_grid['max_depth'], fontsize=17)
+plt.yticks(fontsize=17)
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=16)
+plt.tight_layout()
+
+
+plt.show()
+
+#%% Matriz de confusión en nuestro caso elegido 
 cm = confusion_matrix(Y_heldout, y_pred_hold)
 
 # Generar figura más compacta
-fig, ax = plt.subplots(figsize=(7, 6))
+fig, ax = plt.subplots(figsize=(6,5))
 
 # Mostrar matriz con etiquetas personalizadas
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=clases)
