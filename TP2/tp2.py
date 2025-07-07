@@ -616,171 +616,6 @@ for split, acc in metrics.items():
 
 #%% Matriz de confusión
 cm = confusion_matrix(Y_heldout, y_pred_hold)
-fig, ax = plt.subplots(figsize=(12, 10))
-disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-                              display_labels=clases)
-disp.plot(ax=ax, cmap='Blues', values_format='d', xticks_rotation=45)
-
-# Ajustar tamaño de fuente dentro de cada celda
-for text in disp.text_.ravel():
-    text.set_fontsize(8)
-
-ax.set_xlabel("Etiqueta Predicha", fontsize=12)
-ax.set_ylabel("Etiqueta Verdadera", fontsize=12)
-ax.set_title("Matriz de Confusión (Conjunto Held‑out)", fontsize=14)
-plt.tight_layout()
-plt.show()
-
-#%%
-# Reporte detallado: precision, recall y F1
-print("\nReporte de clasificación (held‑out):")
-print(classification_report(Y_heldout, y_pred_hold,
-                            target_names=clases, digits=3))
-#%% Análisis de errores
-
-row_sums = cm.sum(axis=1, keepdims=True)
-error_rates = np.divide(cm, row_sums, where=row_sums != 0)
-np.fill_diagonal(error_rates, 0)     # ponemos 0 en los aciertos
-
-# Extraemos confusiones >1 %
-confusions = [
-    (i, j, error_rates[i, j])
-    for i in range(len(clases))
-    for j in range(len(clases))
-    if i != j and error_rates[i, j] > 0.01
-]
-confusions.sort(key=lambda x: x[2], reverse=True)
-
-print("\nPrincipales confusiones (>1 % de la clase):")
-for i, j, rate in confusions[:10]:
-    print(f"{clases[i]} → {clases[j]}: {rate:.2%}")
-#%% Calculamos presición y recall por clase 
-
-prec  = precision_score(Y_heldout, y_pred_hold, average=None)
-rec   = recall_score(Y_heldout, y_pred_hold, average=None)
-
-#%% Gráfico que visualiza la precisión y recall por clase  
-
-clases = list(range(10))  # sabemos que van del 0 al 9
-grosor = 0.4
-
-fig, ax = plt.subplots(figsize=(12, 6))
-ax.bar([c - grosor/2 for c in clases], prec, grosor, label='Precisión', color='lightblue')
-ax.bar([c + grosor/2 for c in clases], rec, grosor, label='Recall', color='blue')
-
-ax.set_xlabel('Clases', fontsize = 19)
-ax.set_ylabel('Valor alcanzado', fontsize = 19)
-ax.set_title('Precision & Recall por Clase', fontsize = 20, pad = 20)
-ax.set_xticks(clases)
-ax.set_xticklabels(clases, fontsize=14)
-ax.tick_params(axis='y', labelsize=14)
-ax.grid(axis='y', linestyle='--', alpha=0.8)
-ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
-
-plt.tight_layout()
-plt.show()
-
-#%% ===============================================================================================
-# CLASIFICACIÓN MULTICLASE
-# ¿A cuál de las 10 clases corresponde la imagen? 
-# =================================================================================================
-clases = [
-    'Remera', 'Pantalón', 'Suéter', 'Vestido', 'Abrigo',
-    'Sandalia', 'Camisa', 'Zapatilla', 'Bolso', 'Botita'
-]
-
-# Separamos los datos en desarrollo dev (80%) y validación heldout (20%)
-X_dev, X_heldout, Y_dev, Y_heldout = train_test_split(
-    X, Y,
-    test_size=0.2,          
-    stratify=Y,
-    random_state=20
-)
-# Luego, dividimos los datos de desarrolo dev, en train y test para búsqueda de hiperparámetros
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X_dev, Y_dev, test_size=0.2, stratify=Y_dev, random_state=42
-)
-
-
-#%% Ajustamos un árbol de decisión con profundidades 1‑10 y medimos exactitud en TRAIN y TEST
-train_scores, test_scores = resultados_train_test(
-    X_train, Y_train, X_test, Y_test, max_depths=range(1, 11)
-)
-
-#%%
-
-# ================================================================
-# Gráfico comparativo
-# ================================================================
-profundidades = list(range(1, 11))
-
-plt.figure(figsize=(9, 5))
-plt.plot(profundidades, train_scores, 'o-', label='Train', linewidth=2, markersize=7)
-plt.plot(profundidades, test_scores,  's-', label='Test',  linewidth=2, markersize=7)
-
-plt.xlabel('Profundidad del Árbol', fontsize=12)
-plt.ylabel('Exactitud (%)', fontsize=12)
-plt.title('Exactitud en Train vs Test según la Profundidad', fontsize=13)
-plt.xticks(profundidades)
-plt.grid(True, linestyle='--', alpha=0.4)
-plt.legend()
-plt.show()
-
-#%% Búsqueda de hiperparámetros con validación cruzada 
-# El criterio lo dejamos por default en gini porque es menos costoso y no disminuye de manera considerable la exactitud
-
-param_grid = {
-    'max_depth': [5, 7, 10],          
-    'min_samples_split': [5, 10, 15],   
-    'min_samples_leaf': [2, 4],     
-    'max_features': [None, 'sqrt', 'log2', 0.5]   
-}
-
-tree = DecisionTreeClassifier(random_state=42)
-grid_search = GridSearchCV(
-    estimator=tree,
-    param_grid=param_grid,
-    cv=5,                      # 5-fold cross-validation
-    scoring='accuracy',
-    n_jobs=-1,        
-    verbose=1              
-    
-)
-
-grid_search.fit(X_train,Y_train)
-
-# Resultados de la búsqueda:
-best_params = grid_search.best_params_
-best_score = grid_search.best_score_
-print(f"\nMejores parámetros: {best_params}")
-print(f"Mejor accuracy en validación cruzada: {best_score:.4f}")
-#%%
-
-# ------------------------------------------------------------------
-# EVALUAR SOBRE LOS DISTINTOS CONJUNTOS
-# ------------------------------------------------------------------
-best_tree = grid_search.best_estimator_
-
-metrics = {}
-
-# TRAIN
-y_pred_train = best_tree.predict(X_train)
-metrics['train_acc'] = accuracy_score(Y_train, y_pred_train)
-
-# TEST 
-y_pred_test = best_tree.predict(X_test)
-metrics['test_acc'] = accuracy_score(Y_test, y_pred_test)
-
-# HELDOUT
-y_pred_hold = best_tree.predict(X_heldout)
-metrics['heldout_acc'] = accuracy_score(Y_heldout, y_pred_hold)
-
-print("\n====== Exactitud ======")
-for split, acc in metrics.items():
-    print(f"{split:10s}: {acc*100:.2f}%")
-
-#%% Matriz de confusión
-cm = confusion_matrix(Y_heldout, y_pred_hold)
 
 # Generar figura más compacta
 fig, ax = plt.subplots(figsize=(8, 6))
@@ -804,170 +639,6 @@ ax.tick_params(axis='y', labelsize=9)
 
 plt.tight_layout()
 plt.show()
-#%%
-# Reporte detallado: precision, recall y F1
-print("\nReporte de clasificación (held‑out):")
-print(classification_report(Y_heldout, y_pred_hold,
-                            target_names=clases, digits=3))
-#%% Análisis de errores
-
-row_sums = cm.sum(axis=1, keepdims=True)
-error_rates = np.divide(cm, row_sums, where=row_sums != 0)
-np.fill_diagonal(error_rates, 0)     # ponemos 0 en los aciertos
-
-# Extraemos confusiones >1 %
-confusions = [
-    (i, j, error_rates[i, j])
-    for i in range(len(clases))
-    for j in range(len(clases))
-    if i != j and error_rates[i, j] > 0.01
-]
-confusions.sort(key=lambda x: x[2], reverse=True)
-
-print("\nPrincipales confusiones (>1 % de la clase):")
-for i, j, rate in confusions[:10]:
-    print(f"{clases[i]} → {clases[j]}: {rate:.2%}")
-#%% Calculamos presición y recall por clase 
-
-prec  = precision_score(Y_heldout, y_pred_hold, average=None)
-rec   = recall_score(Y_heldout, y_pred_hold, average=None)
-
-#%% Gráfico que visualiza la precisión y recall por clase  
-
-clases = list(range(10))  # sabemos que van del 0 al 9
-grosor = 0.4
-
-fig, ax = plt.subplots(figsize=(12, 6))
-ax.bar([c - grosor/2 for c in clases], prec, grosor, label='Precisión', color='lightblue')
-ax.bar([c + grosor/2 for c in clases], rec, grosor, label='Recall', color='blue')
-
-ax.set_xlabel('Clases', fontsize = 19)
-ax.set_ylabel('Valor alcanzado', fontsize = 19)
-ax.set_title('Precision & Recall por Clase', fontsize = 20, pad = 20)
-ax.set_xticks(clases)
-ax.set_xticklabels(clases, fontsize=14)
-ax.tick_params(axis='y', labelsize=14)
-ax.grid(axis='y', linestyle='--', alpha=0.8)
-ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
-
-plt.tight_layout()
-plt.show()
-
-#%% ===============================================================================================
-# CLASIFICACIÓN MULTICLASE
-# ¿A cuál de las 10 clases corresponde la imagen? 
-# =================================================================================================
-clases = [
-    'Remera', 'Pantalón', 'Suéter', 'Vestido', 'Abrigo',
-    'Sandalia', 'Camisa', 'Zapatilla', 'Bolso', 'Botita'
-]
-
-# Separamos los datos en desarrollo dev (80%) y validación heldout (20%)
-X_dev, X_heldout, Y_dev, Y_heldout = train_test_split(
-    X, Y,
-    test_size=0.2,          
-    stratify=Y,
-    random_state=20
-)
-# Luego, dividimos los datos de desarrolo dev, en train y test para búsqueda de hiperparámetros
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X_dev, Y_dev, test_size=0.2, stratify=Y_dev, random_state=42
-)
-
-
-#%% Ajustamos un árbol de decisión con profundidades 1‑10 y medimos exactitud en TRAIN y TEST
-train_scores, test_scores = resultados_train_test(
-    X_train, Y_train, X_test, Y_test, max_depths=range(1, 11)
-)
-
-#%%
-
-# ================================================================
-# Gráfico comparativo
-# ================================================================
-profundidades = list(range(1, 11))
-
-plt.figure(figsize=(9, 5))
-plt.plot(profundidades, train_scores, 'o-', label='Train', linewidth=2, markersize=7)
-plt.plot(profundidades, test_scores,  's-', label='Test',  linewidth=2, markersize=7)
-
-plt.xlabel('Profundidad del Árbol', fontsize=12)
-plt.ylabel('Exactitud (%)', fontsize=12)
-plt.title('Exactitud en Train vs Test según la Profundidad', fontsize=13)
-plt.xticks(profundidades)
-plt.grid(True, linestyle='--', alpha=0.4)
-plt.legend()
-plt.show()
-
-#%% Búsqueda de hiperparámetros con validación cruzada 
-# El criterio lo dejamos por default en gini porque es menos costoso y no disminuye de manera considerable la exactitud
-
-param_grid = {
-    'max_depth': [5, 7, 10],          
-    'min_samples_split': [5, 10, 15],   
-    'min_samples_leaf': [2, 4],     
-    'max_features': [None, 'sqrt', 'log2', 0.5]   
-}
-
-tree = DecisionTreeClassifier(random_state=42)
-grid_search = GridSearchCV(
-    estimator=tree,
-    param_grid=param_grid,
-    cv=5,                      # 5-fold cross-validation
-    scoring='accuracy',
-    n_jobs=-1,        
-    verbose=1              
-    
-)
-
-grid_search.fit(X_train,Y_train)
-
-# Resultados de la búsqueda:
-best_params = grid_search.best_params_
-best_score = grid_search.best_score_
-print(f"\nMejores parámetros: {best_params}")
-print(f"Mejor accuracy en validación cruzada: {best_score:.4f}")
-#%%
-
-# ------------------------------------------------------------------
-# EVALUAR SOBRE LOS DISTINTOS CONJUNTOS
-# ------------------------------------------------------------------
-best_tree = grid_search.best_estimator_
-
-metrics = {}
-
-# TRAIN
-y_pred_train = best_tree.predict(X_train)
-metrics['train_acc'] = accuracy_score(Y_train, y_pred_train)
-
-# TEST 
-y_pred_test = best_tree.predict(X_test)
-metrics['test_acc'] = accuracy_score(Y_test, y_pred_test)
-
-# HELDOUT
-y_pred_hold = best_tree.predict(X_heldout)
-metrics['heldout_acc'] = accuracy_score(Y_heldout, y_pred_hold)
-
-print("\n====== Exactitud ======")
-for split, acc in metrics.items():
-    print(f"{split:10s}: {acc*100:.2f}%")
-
-#%% Matriz de confusión
-cm = confusion_matrix(Y_heldout, y_pred_hold)
-fig, ax = plt.subplots(figsize=(12, 10))
-disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-                              display_labels=clases)
-disp.plot(ax=ax, cmap='Blues', values_format='d', xticks_rotation=45)
-
-# Ajustar tamaño de fuente dentro de cada celda
-for text in disp.text_.ravel():
-    text.set_fontsize(8)
-
-ax.set_xlabel("Etiqueta Predicha", fontsize=12)
-ax.set_ylabel("Etiqueta Verdadera", fontsize=12)
-ax.set_title("Matriz de Confusión (Conjunto Held‑out)", fontsize=14)
-plt.tight_layout()
-plt.show()
 
 #%%
 # Reporte detallado: precision, recall y F1
@@ -999,24 +670,33 @@ rec   = recall_score(Y_heldout, y_pred_hold, average=None)
 
 #%% Gráfico que visualiza la precisión y recall por clase  
 
-clases = list(range(10))  # sabemos que van del 0 al 9
+class_ids = list(range(10))      # 0‑9 para posiciones en el eje X
 grosor = 0.4
 
 fig, ax = plt.subplots(figsize=(12, 6))
-ax.bar([c - grosor/2 for c in clases], prec, grosor, label='Precisión', color='lightblue')
-ax.bar([c + grosor/2 for c in clases], rec, grosor, label='Recall', color='blue')
+ax.bar([c - grosor/2 for c in class_ids], prec, grosor,
+       label='Precisión', color='lightblue')
+ax.bar([c + grosor/2 for c in class_ids], rec,  grosor,
+       label='Recall',    color='blue')
 
-ax.set_xlabel('Clases', fontsize = 19)
-ax.set_ylabel('Valor alcanzado', fontsize = 19)
-ax.set_title('Precision & Recall por Clase', fontsize = 20, pad = 20)
-ax.set_xticks(clases)
-ax.set_xticklabels(clases, fontsize=14)
+ax.set_xlabel('Clases', fontsize=19)
+ax.set_ylabel('Valor alcanzado', fontsize=19)
+ax.set_title('Precisión & Recall por Clase', fontsize=20, pad=20)
+
+ax.set_xticks(class_ids)
+ax.set_xticklabels(class_ids, fontsize=14)   # si querés que muestre 0‑9
+# ó  ax.set_xticklabels(clases, fontsize=14, rotation=45)  # si preferís los nombres reales
+
 ax.tick_params(axis='y', labelsize=14)
 ax.grid(axis='y', linestyle='--', alpha=0.8)
 ax.legend(fontsize=12, handlelength=2, handleheight=1.5)
 
 plt.tight_layout()
 plt.show()
+
+
+
+
 
 
 
