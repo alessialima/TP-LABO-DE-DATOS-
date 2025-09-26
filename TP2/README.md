@@ -1,6 +1,6 @@
 # 2do TRABAJO PRÁCTICO: Fashion-MNIST 👕
 
-<ins>*Librerias necesarias para ejecutar el programa:*</ins>
+<ins>Librerias necesarias para ejecutar el programa:</ins>
 
 * os
 * pandas
