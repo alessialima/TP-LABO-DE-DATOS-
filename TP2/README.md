@@ -1,6 +1,6 @@
 # 2do TRABAJO PRÁCTICO: Fashion-MNIST
 
-## Librerias necesarias para ejecutar el programa:
+<ins>*Librerias necesarias para ejecutar el programa:*</ins>
 
 pandas
 numpy 
