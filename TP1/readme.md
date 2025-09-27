@@ -2,6 +2,8 @@
 
 Objetivo: evaluar el manejo de datos y su visualización por parte de cada uno de los alumnos 
 
+➡️ tp01'AmichisLabo' 
+
 <ins>Librerias necesarias para ejecutar el programa:</ins>
 * os
 * pandas
