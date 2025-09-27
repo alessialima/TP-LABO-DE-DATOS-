@@ -1,0 +1,513 @@
+Provincia,Departamento,Cant_BP,Cant_EE,Población
+Ciudad de Buenos Aires,CABA,43,1552,3095454.0
+Córdoba,Capital,20,1054,1498060.0
+Buenos Aires,La Matanza,16,957,1837168.0
+Santa Fe,Rosario,39,742,1337958.0
+Buenos Aires,La Plata,33,604,756074.0
+Buenos Aires,Lomas de Zamora,12,518,685644.0
+Buenos Aires,General Pueyrredón,6,499,660569.0
+Buenos Aires,Quilmes,9,448,631774.0
+Santa Fe,La Capital,23,420,568259.0
+Entre Ríos,Paraná,11,415,388716.0
+Buenos Aires,Almirante Brown,11,409,583209.0
+Chaco,San Fernando,31,397,413764.0
+Tucumán,Capital,10,366,587289.0
+Buenos Aires,Moreno,16,360,575758.0
+Río Negro,General Roca,29,354,379627.0
+Buenos Aires,Lanús,13,347,460081.0
+Córdoba,San Justo,20,345,228951.0
+Buenos Aires,Merlo,4,344,581484.0
+Chaco,General Güemes,1,337,68429.0
+Buenos Aires,Tigre,13,331,446291.0
+Córdoba,Río Cuarto,16,325,277979.0
+Neuquén,Confluencia,40,315,467217.0
+Buenos Aires,Pilar,6,295,393614.0
+Buenos Aires,Florencio Varela,10,288,488103.0
+Buenos Aires,Avellaneda,15,283,366117.0
+Buenos Aires,General San Martín,14,281,444503.0
+Misiones,Capital,7,279,391498.0
+Buenos Aires,Berazategui,6,278,358328.0
+Salta,Capital,27,267,624003.0
+Santiago del Estero,Capital,26,265,328824.0
+Buenos Aires,Bahía Blanca,15,264,334505.0
+Buenos Aires,Morón,2,263,329517.0
+Buenos Aires,Tres de Febrero,9,262,362319.0
+Buenos Aires,San Isidro,7,257,295978.0
+Buenos Aires,San Miguel,4,255,327650.0
+Misiones,Oberá,3,254,120703.0
+Santa Fe,General Obligado,14,253,197533.0
+Corrientes,Capital,15,247,437446.0
+Córdoba,Colón,11,247,294511.0
+Santa Fe,Castellanos,21,240,189464.0
+Misiones,Guaraní,2,240,77075.0
+Formosa,Formosa,8,231,268572.0
+Santa Fe,General López,21,229,200455.0
+Formosa,Pirané,3,229,72560.0
+Buenos Aires,Malvinas Argentinas,5,225,349401.0
+Jujuy,Dr. Manuel Belgrano,7,217,319469.0
+Buenos Aires,Vicente López,6,216,280541.0
+Buenos Aires,Escobar,2,212,256071.0
+Mendoza,San Rafael,14,211,213204.0
+Santiago del Estero,Banda,13,211,170401.0
+Buenos Aires,Esteban Echeverría,3,206,337880.0
+Formosa,Patiño,2,205,81600.0
+Santa Fe,Las Colonias,18,194,114730.0
+Córdoba,Punilla,12,193,219494.0
+Misiones,Cainguás,3,192,59875.0
+Córdoba,Unión,7,188,113635.0
+Santa Fe,San Cristóbal,11,178,72593.0
+Entre Ríos,Concordia,5,175,197603.0
+La Rioja,Capital,6,174,210507.0
+Misiones,General Manuel Belgrano,2,173,45456.0
+San Luis,Juan Martín de Pueyrredón,10,171,260769.0
+Entre Ríos,Gualeguaychú,8,171,125176.0
+Buenos Aires,José C. Paz,0,171,326527.0
+Buenos Aires,Olavarría,11,169,122011.0
+Chubut,Escalante,7,169,214829.0
+Mendoza,Guaymallén,5,169,320871.0
+Formosa,Pilcomayo,8,167,94116.0
+Buenos Aires,San Fernando,7,164,171099.0
+Córdoba,General San Martín,8,160,152397.0
+Córdoba,Santa María,8,160,139012.0
+Misiones,San Ignacio,2,160,63194.0
+Buenos Aires,Tandil,14,158,144678.0
+Corrientes,Goya,3,158,106223.0
+Córdoba,Río Segundo,7,156,113311.0
+Entre Ríos,Uruguay,6,156,115516.0
+Córdoba,Marcos Juárez,11,155,107286.0
+Río Negro,Bariloche,9,153,161443.0
+Córdoba,Tercero Arriba,6,153,120207.0
+Buenos Aires,San Nicolás,2,153,166657.0
+Tucumán,Cruz Alta,4,152,227688.0
+Chaco,Libertador General San Martín,6,150,65304.0
+Salta,General José de San Martín,5,148,177448.0
+San Juan,Capital,16,147,114849.0
+Misiones,Iguazú,3,146,99838.0
+Buenos Aires,Pergamino,4,145,114988.0
+Mendoza,Capital,3,139,123715.0
+Buenos Aires,Luján,5,138,110111.0
+Buenos Aires,Ezeiza,2,138,198620.0
+Santa Fe,Vera,8,137,55463.0
+Entre Ríos,La Paz,3,137,75271.0
+Chaco,Comandante Fernández,2,137,101086.0
+Córdoba,Cruz del Eje,1,137,64748.0
+Chubut,Rawson,14,136,144420.0
+Buenos Aires,Hurlingham,2,136,185361.0
+Córdoba,Río Primero,3,133,58181.0
+Buenos Aires,Ituzaingó,1,133,177983.0
+Misiones,Eldorado,1,132,91133.0
+Entre Ríos,Villaguay,3,131,55284.0
+Misiones,Leandro N. Alem,1,131,49391.0
+Misiones,25 de Mayo,2,129,30877.0
+La Pampa,Capital,8,128,118504.0
+Misiones,San Pedro,1,126,34690.0
+Córdoba,Calamuchita,6,125,75462.0
+Catamarca,Belén,5,125,30353.0
+Santa Fe,San Lorenzo,7,124,193786.0
+Mendoza,Maipú,3,124,218887.0
+Formosa,Bermejo,0,124,15600.0
+Entre Ríos,Nogoyá,4,123,42954.0
+Santiago del Estero,Río Hondo,4,123,66637.0
+Santa Fe,San Jerónimo,8,122,84617.0
+Buenos Aires,Necochea,5,122,101483.0
+Buenos Aires,Campana,1,122,107976.0
+Buenos Aires,Zárate,1,122,131415.0
+Buenos Aires,Junín,8,121,100964.0
+Mendoza,Godoy Cruz,3,121,194557.0
+Salta,Rivadavia,1,121,38062.0
+Buenos Aires,Azul,3,118,75152.0
+Catamarca,Capital,4,117,186466.0
+San Luis,General Pedernera,10,113,148671.0
+Entre Ríos,Federación,4,111,78264.0
+Mendoza,Las Heras,6,110,233839.0
+Santiago del Estero,Pellegrini,0,110,26193.0
+Santa Cruz,Güer Aike,8,109,137309.0
+Misiones,Libertador General San Martín,2,109,52166.0
+San Juan,Rawson,8,108,136582.0
+Salta,Orán,4,108,159715.0
+Córdoba,San Javier,5,107,62700.0
+Formosa,Ramón Lista,0,107,17678.0
+Córdoba,Juárez Celman,3,105,68317.0
+Buenos Aires,Chivilcoy,1,104,70554.0
+Santa Cruz,Deseado,7,103,126266.0
+Córdoba,San Alberto,2,103,42029.0
+Santa Fe,Iriondo,12,102,73636.0
+Buenos Aires,Trenque Lauquen,2,102,49128.0
+Santiago del Estero,Copo,2,102,35653.0
+Santiago del Estero,Figueroa,0,102,20246.0
+Mendoza,San Martín,4,101,139406.0
+Tucumán,Leales,3,101,66352.0
+Buenos Aires,General Rodríguez,1,101,142315.0
+Santa Fe,9 de Julio,3,100,30942.0
+Buenos Aires,Mercedes,1,100,71002.0
+Santiago del Estero,Moreno,0,100,40352.0
+Tucumán,Tafí Viejo,4,98,172877.0
+Buenos Aires,Tres Arroyos,10,97,61889.0
+Buenos Aires,25 de Mayo,1,97,35411.0
+Corrientes,Esquina,1,97,39168.0
+Buenos Aires,Cañuelas,2,96,70542.0
+Buenos Aires,San Pedro,2,96,68353.0
+Santa Fe,San Martín,12,95,67299.0
+Catamarca,La Paz,2,95,26341.0
+Jujuy,San Pedro,6,92,88237.0
+Chaco,Almirante Brown,0,92,37794.0
+Mendoza,Luján de Cuyo,6,91,171883.0
+Entre Ríos,Diamante,3,90,52312.0
+Buenos Aires,9 de Julio,2,90,52366.0
+Buenos Aires,Lincoln,7,89,45191.0
+Santa Fe,Constitución,17,88,93000.0
+Santa Fe,Caseros,10,88,86261.0
+Buenos Aires,Chacabuco,2,88,52409.0
+Catamarca,Santa María,2,86,26822.0
+Catamarca,Tinogasta,1,86,25254.0
+Entre Ríos,Colón,6,85,74890.0
+Río Negro,Adolfo Alsina,5,85,63845.0
+Jujuy,El Carmen,4,85,122259.0
+Santiago del Estero,Choya,2,85,43692.0
+Buenos Aires,Balcarce,1,85,48516.0
+Tucumán,Burruyacú,0,85,45459.0
+Buenos Aires,Coronel Suárez,3,84,41713.0
+Entre Ríos,Victoria,0,84,40301.0
+Santa Fe,San Justo,6,83,46486.0
+Buenos Aires,Bolívar,4,82,37194.0
+Chaco,Mayor Luis J. Fontana,3,82,59798.0
+Chaco,Quitilipi,3,82,32430.0
+Corrientes,Santo Tomé,2,82,71922.0
+Santiago del Estero,Alberdi,1,82,20104.0
+Santiago del Estero,Avellaneda,3,81,25462.0
+Corrientes,Curuzú Cuatiá,2,81,51489.0
+Entre Ríos,Gualeguay,2,81,56796.0
+Santiago del Estero,Loreto,1,81,24047.0
+Buenos Aires,Pehuajó,4,80,44594.0
+Formosa,Pilagás,0,80,19089.0
+San Juan,Rivadavia,8,79,101334.0
+Buenos Aires,General Villegas,5,78,35055.0
+Buenos Aires,Lobos,4,78,41418.0
+Buenos Aires,Chascomús,0,78,42191.0
+Santiago del Estero,Robles,4,77,53879.0
+Buenos Aires,San Vicente,2,77,97929.0
+Entre Ríos,Federal,2,77,29436.0
+Buenos Aires,Berisso,7,76,100685.0
+Salta,Anta,5,76,69442.0
+Santiago del Estero,General Taboada,3,75,46304.0
+Buenos Aires,Saladillo,1,75,35423.0
+Corrientes,Bella Vista,1,75,44369.0
+Buenos Aires,Baradero,3,74,39223.0
+Misiones,Apóstoles,1,74,50503.0
+San Juan,Jáchal,1,74,25269.0
+Tucumán,Chicligasta,1,74,92308.0
+Chaco,Maipú,0,74,26354.0
+Chubut,Biedma,7,73,102806.0
+Corrientes,Lavalle,1,73,40406.0
+Santiago del Estero,Jiménez,1,73,18622.0
+Tucumán,Simoca,0,73,36946.0
+Tierra del Fuego,Río Grande,7,72,104949.0
+San Luis,Ayacucho,3,72,23653.0
+Buenos Aires,San Andrés de Giles,1,71,26399.0
+Buenos Aires,La Costa,6,70,100400.0
+Buenos Aires,Villarino,4,70,32552.0
+Córdoba,Ischilín,2,70,36023.0
+Buenos Aires,Coronel de Marina Leonardo Rosales,4,69,65823.0
+Mendoza,Lavalle,3,68,47086.0
+Santiago del Estero,Juan Felipe Ibarra,1,68,20567.0
+Córdoba,General Roca,5,67,36064.0
+Jujuy,Ledesma,4,67,94132.0
+Buenos Aires,Ayacucho,1,67,21757.0
+San Juan,Pocito,1,67,72879.0
+Tucumán,Monteros,5,66,77469.0
+Catamarca,Capayán,4,66,19471.0
+Misiones,Montecarlo,4,66,38620.0
+Córdoba,Presidente Roque Sáenz Peña,3,66,37551.0
+Entre Ríos,Tala,2,66,31091.0
+San Juan,Chimbas,2,66,103772.0
+Tucumán,Yerba Buena,1,66,102589.0
+Corrientes,Mercedes,5,65,49807.0
+Buenos Aires,Patagones,1,65,37499.0
+Buenos Aires,Las Flores,1,64,27136.0
+Buenos Aires,Marcos Paz,1,63,64761.0
+Tucumán,Lules,0,63,93464.0
+Corrientes,Monte Caseros,7,62,45602.0
+La Pampa,Maracó,6,62,69067.0
+Chaco,9 de Julio,4,62,30223.0
+Mendoza,General Alvear,4,62,52379.0
+La Rioja,Chilecito,3,62,58681.0
+Chubut,Futaleufú,2,62,49965.0
+San Juan,Caucete,1,62,44017.0
+Corrientes,General Paz,3,61,17016.0
+Santa Fe,San Javier,3,61,33180.0
+Chaco,25 de Mayo,1,61,32606.0
+Santiago del Estero,Salavina,0,61,12775.0
+Corrientes,Concepción,2,60,26270.0
+Misiones,San Javier,2,60,23080.0
+Córdoba,Tulumba,1,60,14092.0
+Buenos Aires,Brandsen,3,59,32350.0
+Corrientes,Paso de los Libres,3,59,56778.0
+Buenos Aires,Lobería,2,59,18106.0
+Formosa,Laishi,2,59,19275.0
+Santiago del Estero,Ojo de Agua,2,59,15008.0
+Tierra del Fuego,Ushuaia,2,59,85506.0
+Corrientes,Ituzaingó,1,59,38767.0
+Córdoba,Río Seco,1,59,15275.0
+Buenos Aires,Navarro,2,58,19888.0
+Jujuy,Humahuaca,2,58,20877.0
+Buenos Aires,Presidente Perón,0,58,101994.0
+Buenos Aires,General Alvarado,2,57,45307.0
+Buenos Aires,Magdalena,1,57,22653.0
+Chaco,O'Higgins,1,57,21544.0
+San Juan,Sarmiento,1,57,27188.0
+Santiago del Estero,Quebrachos,1,57,12336.0
+Chaco,Bermejo,3,56,28060.0
+Chaco,Chacabuco,3,56,34493.0
+Catamarca,El Alto,1,56,4375.0
+Corrientes,San Luis del Palmar,1,56,21381.0
+Córdoba,Totoral,0,56,22473.0
+Buenos Aires,Bragado,4,55,46227.0
+Misiones,Candelaria,4,55,34945.0
+Buenos Aires,Carlos Casares,3,55,22905.0
+Buenos Aires,Mar Chiquita,1,55,32973.0
+Catamarca,Andalgalá,1,55,19545.0
+Chubut,Cushamen,7,54,28099.0
+San Luis,Junín,7,54,40289.0
+Santa Fe,Belgrano,6,54,48544.0
+Buenos Aires,Salto,2,54,39257.0
+San Juan,25 de Mayo,0,54,20824.0
+Santiago del Estero,San Martín,0,54,11183.0
+Buenos Aires,Coronel Pringles,1,53,24110.0
+Buenos Aires,General Juan Madariaga,1,53,22566.0
+Chaco,12 de Octubre,1,53,23179.0
+Corrientes,Empedrado,1,53,17948.0
+Corrientes,Saladas,1,53,29126.0
+Río Negro,Avellaneda,6,52,41160.0
+Jujuy,Yavi,2,52,25831.0
+Salta,Santa Victoria,1,52,9411.0
+Buenos Aires,Exaltación de la Cruz,0,52,40036.0
+Formosa,Matacos,0,52,17017.0
+Mendoza,San Carlos,5,51,39752.0
+Tucumán,Río Chico,2,51,64927.0
+Buenos Aires,Ensenada,5,50,63978.0
+Mendoza,Tunuyán,3,50,59972.0
+Buenos Aires,Adolfo Alsina,2,50,17344.0
+La Rioja,Rosario Vera Peñaloza,0,50,15764.0
+Buenos Aires,Rojas,1,49,25619.0
+San Luis,Libertador General San Martín,1,49,4691.0
+Jujuy,Cochinoca,3,48,14998.0
+Buenos Aires,Rauch,2,48,16491.0
+Mendoza,Rivadavia,2,48,63589.0
+Buenos Aires,Roque Pérez,1,48,13901.0
+Mendoza,Junín,3,47,46472.0
+Buenos Aires,San Antonio de Areco,2,47,26695.0
+Chaco,Independencia,0,47,21948.0
+Buenos Aires,Ramallo,4,46,39648.0
+Buenos Aires,Arrecifes,1,46,32077.0
+Buenos Aires,Daireaux,0,46,18328.0
+Buenos Aires,Coronel Dorrego,3,45,15795.0
+San Luis,Belgrano,2,45,5575.0
+Buenos Aires,General Alvear,1,45,10150.0
+Buenos Aires,Rivadavia,1,45,19735.0
+Tucumán,Graneros,1,45,15539.0
+Buenos Aires,General Paz,0,45,14141.0
+La Rioja,General San Martín,0,45,5017.0
+Buenos Aires,Tornquist,4,44,14591.0
+Buenos Aires,Monte,2,44,24616.0
+Salta,Metán,2,44,48028.0
+San Juan,Valle Fértil,2,44,8425.0
+Buenos Aires,Carmen de Areco,1,44,17345.0
+Chaco,San Lorenzo,1,44,16045.0
+Salta,Rosario de Lerma,1,44,50961.0
+San Luis,Chacabuco,6,43,26522.0
+San Luis,Coronel Pringles,4,43,16044.0
+Buenos Aires,Saavedra,3,43,21407.0
+Catamarca,Pomán,3,43,12219.0
+Chaco,Sargento Cabral,3,43,18696.0
+Neuquén,Zapala,2,43,45540.0
+Salta,Rosario de la Frontera,2,43,33750.0
+Corrientes,San Cosme,1,43,19679.0
+La Rioja,Chamical,1,43,15630.0
+Jujuy,Palpalá,4,42,65522.0
+Buenos Aires,Puan,3,42,16391.0
+Catamarca,Santa Rosa,3,42,13317.0
+Salta,General Güemes,3,42,55746.0
+Buenos Aires,Carlos Tejedor,2,42,14007.0
+Corrientes,San Roque,2,42,22682.0
+Buenos Aires,Colón,1,42,27406.0
+Buenos Aires,Dolores,1,42,31405.0
+Catamarca,Ancasti,0,42,3282.0
+Buenos Aires,Guaminí,5,41,11662.0
+Catamarca,Valle Viejo,4,41,33951.0
+San Juan,Santa Lucía,4,41,62697.0
+Mendoza,Malargüe,1,41,32596.0
+Tucumán,Trancas,1,41,23438.0
+Córdoba,Minas,0,41,4855.0
+Entre Ríos,Feliciano,0,41,16717.0
+Neuquén,Lácar,4,40,39567.0
+Buenos Aires,General Viamonte,2,40,22530.0
+Buenos Aires,Tapalqué,1,40,10695.0
+Santiago del Estero,Atamisqui,1,40,14894.0
+Corrientes,San Martín,0,40,15164.0
+La Rioja,General Ortiz de Ocampo,0,40,7347.0
+Santiago del Estero,Guasayán,0,40,9251.0
+Tucumán,Famaillá,2,39,42669.0
+Córdoba,Pocho,0,39,5070.0
+Buenos Aires,Adolfo Gonzales Chaves,2,38,12847.0
+La Rioja,General Belgrano,2,38,7615.0
+Entre Ríos,Islas del Ibicuy,1,38,13984.0
+Buenos Aires,General Las Heras,1,37,17980.0
+Mendoza,Tupungato,1,37,41168.0
+San Juan,Calingasta,2,36,10667.0
+Santa Fe,Garay,2,36,24853.0
+Tucumán,Tafí del Valle,2,36,22382.0
+Buenos Aires,General Belgrano,0,36,20674.0
+Buenos Aires,General La Madrid,1,35,11535.0
+Catamarca,Ambato,1,35,5087.0
+La Rioja,General Juan Facundo Quiroga,0,35,4013.0
+Río Negro,San Antonio,4,34,35473.0
+Catamarca,Paclín,2,34,4696.0
+Chaco,General Donovan,2,34,15061.0
+Tucumán,Juan Bautista Alberdi,1,34,34745.0
+Buenos Aires,Leandro N. Alem,3,33,17153.0
+Buenos Aires,Villa Gesell,2,33,37325.0
+Buenos Aires,Benito Juárez,1,33,21185.0
+Buenos Aires,Suipacha,1,33,11736.0
+Chaco,Fray Justo Santa María de Oro,1,33,10643.0
+Corrientes,Sauce,1,33,10382.0
+San Juan,Albardón,1,33,31281.0
+Tucumán,La Cocha,1,33,21196.0
+Salta,Iruya,0,33,6116.0
+Buenos Aires,General Arenales,2,32,16231.0
+Buenos Aires,Laprida,1,32,11496.0
+La Rioja,Famatina,1,32,6984.0
+Santiago del Estero,Silípica,0,32,9766.0
+La Pampa,Utracán,5,31,17686.0
+Buenos Aires,Pinamar,2,31,39224.0
+Entre Ríos,San Salvador,2,31,20786.0
+Misiones,Concepción,1,31,10303.0
+La Pampa,Realicó,8,30,17356.0
+La Pampa,Conhelo,5,30,15094.0
+Neuquén,Pehuenches,2,30,29721.0
+San Juan,Iglesia,2,30,8826.0
+Jujuy,Tilcara,1,30,14621.0
+Neuquén,Huiliches,1,30,20853.0
+Buenos Aires,General Pinto,4,29,12842.0
+Mendoza,Santa Rosa,2,29,19379.0
+Buenos Aires,Punta Indio,1,29,12161.0
+Corrientes,San Miguel,0,29,12700.0
+La Pampa,Rancul,6,28,11090.0
+San Juan,San Martín,3,28,15037.0
+Buenos Aires,Alberti,2,28,12906.0
+Jujuy,Santa Bárbara,2,28,20497.0
+Salta,Cerrillos,2,28,55713.0
+Buenos Aires,Capitán Sarmiento,1,28,15882.0
+San Juan,Angaco,0,28,10172.0
+Catamarca,Fray Mamerto Esquiú,4,27,14624.0
+Río Negro,25 de Mayo,2,27,16555.0
+La Rioja,Ángel Vicente Peñaloza,1,27,3184.0
+Salta,San Carlos,1,27,7779.0
+La Pampa,Chapaleufú,5,26,12277.0
+Buenos Aires,Castelli,1,26,9551.0
+Buenos Aires,Maipú,1,26,11253.0
+Chaco,Libertad,0,26,13775.0
+Corrientes,Mburucuyá,0,26,11541.0
+Santiago del Estero,Sarmiento,0,26,5034.0
+San Luis,Gobernador Dupuy,2,25,14334.0
+Chaco,Presidencia de la Plaza,1,25,13938.0
+La Rioja,Arauco,1,25,16251.0
+La Rioja,General Felipe Varela,1,25,11371.0
+Buenos Aires,Pila,0,25,4615.0
+Chaco,1º de Mayo,0,25,14265.0
+Jujuy,Santa Catalina,0,25,2641.0
+Salta,Chicoana,0,25,24715.0
+Neuquén,Chos Malal,4,24,18289.0
+Neuquén,Minas,3,24,9267.0
+Buenos Aires,Florentino Ameghino,0,24,10759.0
+Chubut,Gaiman,3,23,12505.0
+Chaco,2 de Abril,1,23,8310.0
+Salta,Cachi,0,22,8928.0
+Neuquén,Aluminé,3,21,10173.0
+Jujuy,Tumbaya,2,21,5298.0
+Buenos Aires,General Guido,1,21,3157.0
+Chaco,General Belgrano,1,21,12807.0
+Corrientes,General Alvear,1,21,9051.0
+Corrientes,Itatí,1,21,11946.0
+Santa Cruz,Lago Argentino,1,21,25384.0
+Santiago del Estero,Rivadavia,1,21,5314.0
+Santiago del Estero,Aguirre,0,21,8959.0
+La Pampa,Atreucó,5,20,11053.0
+Buenos Aires,San Cayetano,2,20,8918.0
+Río Negro,Pilcaniyeu,2,20,9309.0
+Chubut,Río Senguer,1,20,6347.0
+Salta,Molinos,1,20,5808.0
+Córdoba,Sobremonte,0,20,4381.0
+La Pampa,Puelén,0,20,11636.0
+Buenos Aires,Hipólito Yrigoyen,1,19,10581.0
+Neuquén,Añelo,1,19,18150.0
+Neuquén,Los Lagos,1,19,15502.0
+Río Negro,Pichi Mahuida,1,19,16493.0
+Santiago del Estero,Belgrano,1,19,10809.0
+Jujuy,Rinconada,0,19,1797.0
+La Pampa,Loventué,3,18,9243.0
+Jujuy,Susques,2,18,3966.0
+Neuquén,Ñorquín,2,18,5572.0
+Río Negro,El Cuy,2,18,6960.0
+Buenos Aires,General Lavalle,1,18,4846.0
+Buenos Aires,Lezama,0,18,6170.0
+La Pampa,Guatraché,5,17,9397.0
+La Pampa,Quemú Quemú,4,17,8404.0
+Buenos Aires,Tres Lomas,1,17,9090.0
+Chubut,Sarmiento,1,17,14477.0
+Chaco,Tapenagá,0,17,4051.0
+Salta,La Caldera,2,16,12246.0
+La Rioja,San Blas de Los Sauces,1,16,4306.0
+Neuquén,Picunches,1,16,8471.0
+Mendoza,La Paz,0,16,12018.0
+La Pampa,Toay,1,15,17927.0
+Salta,Cafayate,1,15,17822.0
+Río Negro,9 de Julio,0,15,3682.0
+Santa Cruz,Corpen Aike,0,15,15035.0
+La Rioja,Castro Barros,4,14,5810.0
+La Pampa,Catriló,3,14,8225.0
+Buenos Aires,Pellegrini,1,14,7112.0
+Neuquén,Loncopué,1,14,7696.0
+Río Negro,Conesa,1,14,7398.0
+Buenos Aires,Salliqueló,0,14,9344.0
+Jujuy,Valle Grande,0,14,2490.0
+Santiago del Estero,Mitre,0,14,1440.0
+La Pampa,Hucal,4,13,7713.0
+Neuquén,Catán Lil,1,13,2641.0
+Río Negro,Valcheta,1,13,4300.0
+Salta,Los Andes,1,13,7182.0
+La Rioja,Independencia,0,13,2399.0
+Chubut,Tehuelches,2,12,5947.0
+La Pampa,Trenel,2,12,5637.0
+Río Negro,Ñorquinco,2,12,1452.0
+Chubut,Languiñeo,1,12,2862.0
+San Juan,9 de Julio,1,12,12498.0
+Santa Cruz,Lago Buenos Aires,1,12,12584.0
+Salta,Guachipas,0,12,3491.0
+Salta,La Viña,0,12,8888.0
+Catamarca,Antofagasta de la Sierra,0,11,1822.0
+Salta,La Candelaria,2,10,7182.0
+Buenos Aires,Monte Hermoso,1,10,8444.0
+Buenos Aires,Tordillo,1,10,2528.0
+Neuquén,Picún Leufú,1,10,5087.0
+Salta,La Poma,1,10,1789.0
+Chubut,Gastre,0,10,1181.0
+La Rioja,Vinchina,0,10,2695.0
+Santa Cruz,Río Chico,2,9,6271.0
+Neuquén,Collón Curá,1,9,4832.0
+Santa Cruz,Magallanes,0,9,12828.0
+Chubut,Telsen,2,8,1608.0
+Jujuy,San Antonio,1,8,6729.0
+Chubut,Paso de Indios,0,7,1882.0
+Corrientes,Berón de Astrada,0,7,2808.0
+La Pampa,Chical Co,0,7,1461.0
+San Juan,Zonda,1,6,6674.0
+La Pampa,Curacó,0,6,1103.0
+La Pampa,Caleu Caleu,1,5,2611.0
+San Juan,Ullum,1,5,6454.0
+La Pampa,Chalileo,0,5,2868.0
+La Rioja,General Lamadrid,0,5,1885.0
+La Pampa,Limay Mahuida,0,4,413.0
+La Pampa,Lihuel Calel,1,3,428.0
+La Rioja,Sanagasta,1,3,2994.0
+Chubut,Florentino Ameghino,0,3,1782.0
+Chubut,Mártires,0,3,744.0
